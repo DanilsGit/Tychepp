@@ -1,0 +1,26 @@
+import { StyleSheet, Text } from "react-native";
+import { global_styles } from "../../src/styles/global";
+import { router } from "expo-router";
+import { Button } from "@rneui/themed";
+import Screen from "../../src/components/Screen";
+
+export default function Configuraciones() {
+  return (
+    <Screen style={styles.container}>
+      <Text style={global_styles.title}>Configuraciones</Text>
+
+      <Text style={global_styles.subTitle}>Menús</Text>
+      <Button onPress={() => router.push("/createMenu")}>Agregar menú</Button>
+      <Text style={global_styles.subTitle}>Horarios</Text>
+      <Button onPress={() => router.push("/createRestaurant")}>
+        Agregar horario
+      </Button>
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 12,
+  },
+});
