@@ -39,7 +39,6 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-
         <Image
           source={require("../../assets/icon.png")}
           style={{

@@ -5,13 +5,13 @@ export const global_styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
-    margin: 20,
+    margin: 10,
   },
   subTitle: {
     fontSize: 20,
     fontWeight: "600",
     textAlign: "center",
-    marginVertical: 20,
+    marginVertical: 10,
   },
   itemTitle: {
     fontSize: 16,

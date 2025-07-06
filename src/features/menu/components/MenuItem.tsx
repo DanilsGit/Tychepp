@@ -1,22 +1,21 @@
-import { StyleSheet, View } from "react-native";
-import { Restaurant } from "../../../types/rowTypes";
 import { Icon, Text } from "@rneui/themed";
-import { colors, global_styles } from "../../../styles/global";
+import { MenuWithRestaurantName } from "../../../types/rowTypes";
+import { StyleSheet, View } from "react-native";
 import { Link } from "expo-router";
+import { global_styles } from "../../../styles/global";
 
 interface Props {
-  restaurant: Restaurant;
+  menu: MenuWithRestaurantName;
 }
-
-export default function RestaurantItem({ restaurant }: Props) {
+export default function MenuItem({ menu }: Props) {
   return (
-    <Link href={`/dashboard`} style={styles.container}>
+    <Link href={`/menus/${menu.id}`} style={styles.container}>
       <View style={styles.container2}>
         <View>
-          <Text style={global_styles.itemTitle}>{restaurant.name}</Text>
-          <Text>Whatsapp: +{restaurant.whatsapp_number}</Text>
-          <Text style={restaurant.ready ? {} : styles.notReady}>
-            Desabilitado
+          <Text style={global_styles.itemTitle}>{menu.name}</Text>
+          <Text>
+            Aosiado a:{" "}
+            <Text style={styles.asociated}>{menu.restaurant.name}</Text>
           </Text>
         </View>
         <Icon name="pencil" type="font-awesome" />
@@ -38,8 +37,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
   },
-  notReady: {
-    color: colors.danger,
+  asociated: {
     fontWeight: "bold",
   },
 });

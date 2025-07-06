@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createMenu } from "../apis";
+import { createMenu } from "../apis/menu";
 import { MenuUpdate } from "../../../types/updateTypes";
 import { Alert } from "react-native";
 import { router } from "expo-router";

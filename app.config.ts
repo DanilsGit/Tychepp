@@ -61,6 +61,13 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     plugins: [
       "expo-router",
       [
+        "expo-image-picker",
+        {
+          photosPermission:
+            "La app accede a tus fotos para subir el menú del restaurante.",
+        },
+      ],
+      [
         "expo-splash-screen",
         {
           image: "./assets/splash-icon.png",

@@ -3,6 +3,7 @@ import { global_styles } from "../../src/styles/global";
 import { router } from "expo-router";
 import { Button } from "@rneui/themed";
 import Screen from "../../src/components/Screen";
+import MenuList from "../../src/features/menu/components/MenuList";
 
 export default function Configuraciones() {
   return (
@@ -11,6 +12,7 @@ export default function Configuraciones() {
 
       <Text style={global_styles.subTitle}>Menús</Text>
       <Button onPress={() => router.push("/createMenu")}>Agregar menú</Button>
+      <MenuList />
       <Text style={global_styles.subTitle}>Horarios</Text>
       <Button onPress={() => router.push("/createRestaurant")}>
         Agregar horario
@@ -22,5 +24,6 @@ export default function Configuraciones() {
 const styles = StyleSheet.create({
   container: {
     padding: 12,
+    gap: 12,
   },
 });

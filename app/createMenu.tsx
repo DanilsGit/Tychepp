@@ -38,7 +38,7 @@ export default function CreateRestaurant() {
 
   return (
     <Screen style={styles.container}>
-      <View style={[styles.verticallySpaced]}>
+      <View style={styles.verticallySpaced}>
         <Text style={global_styles.title}>Nuevo Menú</Text>
         <Input
           label="Nombre de la carta"
