@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { Restaurant } from "../../../types/rowTypes";
+import { useAuthStore } from "../../login/stores/authStore";
 
 export const useGetRestaurants = () => {
+  const { session } = useAuthStore();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -12,7 +14,7 @@ export const useGetRestaurants = () => {
 
   const getRestaurants = async () => {
     try {
-      const { data } = await supabase.from("restaurant").select(`*`);
+      const { data } = await supabase.from("restaurant").select(`*`).eq("owner", session?.user.id);
       setIsLoading(false);
       if (!data) return;
       setRestaurants(data);

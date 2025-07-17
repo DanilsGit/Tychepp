@@ -1,38 +1,24 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
-import { Button, Input } from "@rneui/themed";
+import { Button, Input } from "@rn-vui/themed";
 import { supabase } from "../../src/lib/supabase";
 import { Image } from "react-native";
+import { useRouter } from "expo-router";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function signInWithEmail() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
-      email: email,
+      email: email.trim(),
       password: password,
     });
 
     if (error) Alert.alert(error.message);
-    setLoading(false);
-  }
-
-  async function signUpWithEmail() {
-    setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
-
-    if (error) Alert.alert(error.message);
-    if (!session)
-      Alert.alert("Please check your inbox for email verification!");
     setLoading(false);
   }
 
@@ -75,6 +61,13 @@ export default function Login() {
           title="Iniciar sesión"
           disabled={loading}
           onPress={() => signInWithEmail()}
+        />
+      </View>
+      <View style={[styles.verticallySpaced, styles.mt20]}>
+        <Button
+          title="Registrarse como empleado"
+          disabled={loading}
+          onPress={() => router.push("/(auth)/registerEmployee")}
         />
       </View>
     </View>

@@ -10,7 +10,7 @@ export default function TabsLayout() {
   }
 
   if (!session || !profile) {
-    return <Redirect href="/(auth)/login" />;
+    return <Redirect href="/login" />;
   }
 
   return (

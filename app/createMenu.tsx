@@ -1,4 +1,4 @@
-import { Button, Input } from "@rneui/themed";
+import { Button, Input } from "@rn-vui/themed";
 import { router } from "expo-router";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import Screen from "../src/components/Screen";
@@ -48,7 +48,7 @@ export default function CreateRestaurant() {
           placeholder="Carta principal"
           autoCapitalize={"none"}
         />
-        <View style={styles.picker}>
+        <View style={global_styles.picker}>
           <Picker
             selectedValue={parameters.restaurant_id}
             onValueChange={(itemValue) =>
@@ -96,11 +96,5 @@ const getStyles = (height: number) =>
       color: "white",
       fontSize: 16,
       fontWeight: "bold",
-    },
-    picker: {
-      borderBottomColor: colors.primary,
-      borderBottomWidth: 1,
-      marginBottom: 10,
-      fontSize: 16,
     },
   });

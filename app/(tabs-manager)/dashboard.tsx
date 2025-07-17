@@ -1,17 +1,17 @@
 import { StyleSheet, View, Text } from "react-native";
 import { supabase } from "../../src/lib/supabase";
-import { Button } from "@rneui/themed";
+import { Button } from "@rn-vui/themed";
 import { useAuthStore } from "../../src/features/login/stores/authStore";
 import { global_styles } from "../../src/styles/global";
 import Screen from "../../src/components/Screen";
 
 export default function Dashboard() {
-  const { profile } = useAuthStore();
+  const { profile, logout } = useAuthStore();
   return (
     <Screen style={styles.container}>
-      <Text style={global_styles.title}>Hola {profile.username}</Text>
+      <Text style={global_styles.title}>Hola {profile?.username}</Text>
       <View style={styles.verticallySpaced}>
-        <Button onPress={() => supabase.auth.signOut()}>
+        <Button onPress={() => logout()}>
           <Text style={global_styles.text_btn}>Cerrar sesión</Text>
         </Button>
       </View>

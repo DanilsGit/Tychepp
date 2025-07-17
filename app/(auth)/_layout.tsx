@@ -15,11 +15,11 @@ export default function AuthLayout() {
   }
 
   if (session && profile?.role === 2) {
-    return <Redirect href="/(tabs-manager)/dashboard" />;
+    return <Redirect href="/dashboard" />;
   }
 
   if (session && profile?.role === 3) {
-    return <Redirect href="/(tabs)/pending" />;
+    return <Redirect href="/atencion" />;
   }
 
   return <Stack screenOptions={{ headerShown: false }} />;

@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { Restaurant } from "../../../types/rowTypes";
-import { Icon, Text } from "@rneui/themed";
+import { Icon, Text } from "@rn-vui/themed";
 import { colors, global_styles } from "../../../styles/global";
 import { Link } from "expo-router";
 
@@ -10,14 +10,14 @@ interface Props {
 
 export default function RestaurantItem({ restaurant }: Props) {
   return (
-    <Link href={`/dashboard`} style={styles.container}>
+    <Link href={`/dashboard`} style={[styles.container, global_styles.card]}>
       <View style={styles.container2}>
         <View>
           <Text style={global_styles.itemTitle}>{restaurant.name}</Text>
           <Text>Whatsapp: +{restaurant.whatsapp_number}</Text>
-          <Text style={restaurant.ready ? {} : styles.notReady}>
-            Desabilitado
-          </Text>
+          {!restaurant.ready && (
+            <Text style={styles.notReady}>NO COMPLETADO</Text>
+          )}
         </View>
         <Icon name="pencil" type="font-awesome" />
       </View>
@@ -40,6 +40,10 @@ const styles = StyleSheet.create({
   },
   notReady: {
     color: colors.danger,
+    fontWeight: "bold",
+  },
+  ready: {
+    color: colors.success,
     fontWeight: "bold",
   },
 });

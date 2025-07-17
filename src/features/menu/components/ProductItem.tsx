@@ -1,4 +1,4 @@
-import { Button, Text } from "@rneui/themed";
+import { Button, Text } from "@rn-vui/themed";
 import { CategoryForProduct, Product } from "../../../types/rowTypes";
 import { StyleSheet, TextInput, View } from "react-native";
 import { colors, global_styles } from "../../../styles/global";

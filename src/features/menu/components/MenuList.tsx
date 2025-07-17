@@ -1,5 +1,5 @@
 import { FlatList, View } from "react-native";
-import { Text } from "@rneui/themed";
+import { Text} from "@rn-vui/themed";
 import { useGetMenu } from "../hooks/useGetMenu";
 import MenuItem from "./MenuItem";
 

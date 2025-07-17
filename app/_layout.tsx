@@ -16,6 +16,17 @@ AppState.addEventListener("change", (state) => {
   }
 });
 
+// Mostrar notificaciones aunque la app esté en primer plano
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: true,
+//     shouldSetBadge: false,
+//     shouldShowBanner: true,
+//     shouldShowList: true,
+//   }),
+// });
+
 export default function RootLayout() {
   useEffect(() => {
     useAuthStore.getState().initializeAuth();
@@ -35,6 +46,12 @@ export default function RootLayout() {
       />
       <Stack.Screen
         name="createMenu"
+        options={{
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="chatUrgentOrder/[id]"
         options={{
           presentation: "modal",
         }}

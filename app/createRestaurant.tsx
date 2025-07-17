@@ -1,4 +1,4 @@
-import { Button, Input } from "@rneui/themed";
+import { Button, Input } from "@rn-vui/themed";
 import { router } from "expo-router";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { useCreateRestaurant } from "../src/features/restaurant/hools/useCreateRestaurant";

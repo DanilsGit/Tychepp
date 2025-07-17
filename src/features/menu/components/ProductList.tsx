@@ -1,5 +1,5 @@
 import { FlatList, View } from "react-native";
-import { Text } from "@rneui/themed";
+import { Text} from "@rn-vui/themed";
 import MenuItem from "./MenuItem";
 import { CategoryForProduct, Product } from "../../../types/rowTypes";
 import ProductItem from "./ProductItem";

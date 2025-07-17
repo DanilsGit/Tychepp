@@ -1,4 +1,4 @@
-import { Icon, Text } from "@rneui/themed";
+import { Icon, Text } from "@rn-vui/themed";
 import { MenuWithRestaurantName } from "../../../types/rowTypes";
 import { StyleSheet, View } from "react-native";
 import { Link } from "expo-router";
@@ -9,7 +9,7 @@ interface Props {
 }
 export default function MenuItem({ menu }: Props) {
   return (
-    <Link href={`/menus/${menu.id}`} style={styles.container}>
+    <Link href={`/menus/${menu.id}`} style={[global_styles.card, styles.container]}>
       <View style={styles.container2}>
         <View>
           <Text style={global_styles.itemTitle}>{menu.name}</Text>
