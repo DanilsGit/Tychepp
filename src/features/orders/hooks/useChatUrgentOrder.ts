@@ -4,6 +4,7 @@ import { FlatList } from "react-native";
 import { useRouter } from "expo-router";
 import { supabase } from "../../../lib/supabase";
 import { sendMessageToWhatsapp } from "../api/messages";
+import { RealtimeChannel } from "@supabase/supabase-js";
 
 export const useChatUrgentOrder = (conversationId: number) => {
   const [conversation, setConversation] = useState<Conversations | null>(null);
@@ -42,38 +43,14 @@ export const useChatUrgentOrder = (conversationId: number) => {
           },
           async (payload: any) => {
             const incomingData = payload.new as Conversations;
+            setConversation(incomingData);
             if (incomingData.messages) {
               setMessages(incomingData.messages as unknown as Message[]);
             }
           }
         )
         .subscribe(async (status: string) => {
-          console.log("Subscription status:", status);
-          if (status === "SUBSCRIBED") {
-            setStatus("");
-            await getPreviousMessages();
-          }
-
-          if (status === "TIMED_OUT") {
-            if (retryCountRef.current < maxRetries) {
-              retryCountRef.current += 1;
-              setStatus(
-                `Reconectanto... (${retryCountRef.current}/${maxRetries})`
-              );
-              setTimeout(() => {
-                subscribe();
-              }, retryDelay);
-            } else {
-              console.error("Máximo de reintentos alcanzado");
-            }
-          }
-
-          if (status === "CLOSED") {
-            setStatus(
-              "Conexión cerrada, comprueba tu conexión a internet y reinicia la aplicación."
-            );
-            setMessages([]);
-          }
+          await statusController(status, subscribe);
         });
 
       return conversations;
@@ -137,6 +114,52 @@ export const useChatUrgentOrder = (conversationId: number) => {
     setIsSending(false);
   };
 
+  const retryConnection = async (subscribe: () => RealtimeChannel) => {
+    if (retryCountRef.current < maxRetries) {
+      retryCountRef.current += 1;
+      console.warn(
+        `Reconnecting... Attempt ${retryCountRef.current}/${maxRetries}`
+      );
+      setStatus(`Reconectando... (${retryCountRef.current}/${maxRetries})`);
+      setTimeout(() => {
+        subscribe();
+      }, retryDelay);
+    } else {
+      setStatus(
+        "Máximo de reintentos alcanzado, por favor cierra la aplicación."
+      );
+    }
+  };
+
+  const statusController = async (
+    status: string,
+    subscribe: () => RealtimeChannel
+  ) => {
+    console.log("ChatUrgent status:", status);
+
+    if (status === "SUBSCRIBED") {
+      retryCountRef.current = 0;
+      await getPreviousMessages();
+      setIsLoading(false);
+      setStatus("");
+    }
+
+    if (status === "TIMED_OUT") {
+      await retryConnection(subscribe);
+    }
+
+    if (status === "CHANNEL_ERROR") {
+      await retryConnection(subscribe);
+    }
+
+    if (status === "CLOSED") {
+      setStatus(
+        "Conexión cerrada, comprueba tu conexión a internet y reinicia la aplicación."
+      );
+      setMessages([]);
+    }
+  };
+
   return {
     messages,
     inputText,
@@ -147,5 +170,6 @@ export const useChatUrgentOrder = (conversationId: number) => {
     isLoading,
     isSending,
     status,
+    conversation,
   };
 };

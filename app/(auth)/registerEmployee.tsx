@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { Button, Input, Text } from "@rn-vui/themed";
+import { Button, Input, Text } from "@rn-vui/base";
 import { Image } from "react-native";
 import { global_styles } from "../../src/styles/global";
 import { useRouter } from "expo-router";

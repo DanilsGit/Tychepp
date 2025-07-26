@@ -7,12 +7,16 @@ import {
   Platform,
   SafeAreaView,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useChatUrgentOrder } from "../../src/features/orders/hooks/useChatUrgentOrder";
 import ChatMessageList from "../../src/features/orders/components/ChatMessageList";
+import { useOrderFromChat } from "../../src/features/orders/hooks/useOrderFromChat";
+import CreateOrderFromChatModal from "../../src/features/orders/components/CreateOrderFromChatModal";
+import { colors } from "../../src/styles/global";
 
 export default function ChatUrgentOrder() {
   const { id, recipientName } = useLocalSearchParams();
@@ -23,33 +27,129 @@ export default function ChatUrgentOrder() {
     flatListRef,
     onBack,
     sendMessage,
-    isLoading,
+    isSending,
+    conversation,
+    status,
   } = useChatUrgentOrder(Number(id));
+
+  const {
+    createOrderFromChat,
+    isGeneratingItems,
+    orderItems,
+    onCancel,
+    onAddItem,
+    productsAvailable,
+    handleEditFieldAtIndex,
+    handleEditField,
+    visible,
+    handleDeleteItem,
+    information,
+    handleEditInformation,
+    onOk,
+    isCreatingOrder,
+  } = useOrderFromChat(conversation, messages);
+
   const insets = useSafeAreaInsets();
   const styles = generateStyles(insets.top, insets.bottom);
 
+  const handleCreateOrderFromChat = () => {
+    Alert.alert(
+      "¿Todo listo?",
+      "¿Conoces los productos, la dirección, el nombre del cliente y todo lo necesario?",
+      [
+        {
+          text: "No aún no",
+          style: "destructive",
+        },
+        {
+          text: "Claro que sí",
+          style: "default",
+          onPress: () => {
+            createOrderFromChat();
+          },
+        },
+      ]
+    );
+  };
+
+  if (isGeneratingItems) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Generando productos...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (isCreatingOrder) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Creando orden...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (status !== "") {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{status}</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
+      <CreateOrderFromChatModal
+        items={orderItems}
+        onCancel={onCancel}
+        onOk={onOk}
+        onAddItem={onAddItem}
+        handleEditFieldAtIndex={handleEditFieldAtIndex}
+        handleEditField={handleEditField}
+        productsAvailable={productsAvailable}
+        visible={visible}
+        handleDeleteItem={handleDeleteItem}
+        information={information}
+        handleEditInformation={handleEditInformation}
+      />
+
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#007AFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{recipientName}</Text>
-        <View style={styles.headerSpacer} />
+        <View style={styles.headerTexts}>
+          <Text style={styles.headerTitle}>{recipientName}</Text>
+          <Text style={{ fontSize: 12, color: colors.success }}>
+            Última actividad{" "}
+            {new Date(conversation?.updated_at || 0).toLocaleTimeString()}
+          </Text>
+        </View>
+        <TouchableOpacity onPress={handleCreateOrderFromChat}>
+          <Ionicons name="create-outline" size={24} color="#007AFF" />
+        </TouchableOpacity>
       </View>
 
       {/* Chat Messages */}
       <KeyboardAvoidingView
         style={styles.chatContainer}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 50}
       >
         {messages.length === 0 ? (
           <View style={styles.emptyStateContainer}>
-            <Text style={styles.emptyStateText}>
-              Start a conversation with {recipientName}
-            </Text>
+            {status !== "" ? (
+              <Text style={styles.emptyStateText}>
+                Start a conversation with {recipientName}
+              </Text>
+            ) : (
+              <Text style={styles.emptyStateText}>{status}</Text>
+            )}
           </View>
         ) : (
           <ChatMessageList messages={messages} flatListRef={flatListRef} />
@@ -77,12 +177,12 @@ export default function ChatUrgentOrder() {
                   ? styles.sendButtonActive
                   : styles.sendButtonInactive,
               ]}
-              disabled={!inputText.trim()}
+              disabled={!inputText.trim() || isSending}
             >
               <Ionicons
                 name="send"
                 size={20}
-                color={inputText.trim() ? "#007AFF" : "#999"}
+                color={inputText.trim() && !isSending ? "#007AFF" : "#999"}
               />
             </TouchableOpacity>
           </View>
@@ -102,6 +202,7 @@ const generateStyles = (insetsTop: number, insetsBottom: number) =>
       paddingTop: insetsTop,
       flexDirection: "row",
       alignItems: "center",
+      justifyContent: "space-between",
       paddingHorizontal: 16,
       paddingVertical: 12,
       backgroundColor: "#fff",
@@ -112,6 +213,10 @@ const generateStyles = (insetsTop: number, insetsBottom: number) =>
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       shadowRadius: 2,
+    },
+    headerTexts: {
+      alignItems: "center",
+      justifyContent: "center",
     },
     backButton: {
       padding: 8,

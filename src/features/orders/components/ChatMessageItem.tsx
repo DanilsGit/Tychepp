@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { Message } from "../../../types/rowTypes";
-import { Text } from "@rn-vui/themed";
+import { Text } from "@rn-vui/base";
 
 interface Props {
   message: Message;

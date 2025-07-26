@@ -1,4 +1,4 @@
-import { Button, Input } from "@rn-vui/themed";
+import { Button, Input } from "@rn-vui/base";
 import { router } from "expo-router";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import Screen from "../src/components/Screen";

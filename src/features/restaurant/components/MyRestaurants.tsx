@@ -1,7 +1,7 @@
 import { FlatList, View } from "react-native";
 import { useGetRestaurants } from "../hools/useGetRestaurants";
 import RestaurantItem from "./RestaurantItem";
-import { Text } from "@rn-vui/themed";
+import { Text } from "@rn-vui/base";
 
 export default function MyRestaurant() {
   const { isLoading, restaurants } = useGetRestaurants();

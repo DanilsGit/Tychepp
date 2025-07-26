@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
-import { Button, Input } from "@rn-vui/themed";
+import { Button, Input } from "@rn-vui/base";
 import { supabase } from "../../src/lib/supabase";
 import { Image } from "react-native";
 import { useRouter } from "expo-router";

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, View, Alert } from "react-native";
-import { Button, Input, Text } from "@rn-vui/themed";
+import { Button, Input, Text } from "@rn-vui/base";
 import { supabase } from "../../src/lib/supabase";
 import { useAuthStore } from "../../src/features/login/stores/authStore";
 import { global_styles } from "../../src/styles/global";

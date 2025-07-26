@@ -1,11 +1,12 @@
 import { Alert, StyleSheet, View } from "react-native";
 import { Conversations } from "../../../types/rowTypes";
-import { Button, Text } from "@rn-vui/themed";
+import { Button, Text } from "@rn-vui/base";
 import { colors, global_styles } from "../../../styles/global";
 import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "../../login/stores/authStore";
 import { supabase } from "../../../lib/supabase";
 import { useRouter } from "expo-router";
+import { useUrgentOrderStore } from "../storages/urgentOrdersStorage";
 
 interface Props {
   conversation: Conversations;
@@ -13,6 +14,7 @@ interface Props {
 
 export default function UrgentOrderItem({ conversation }: Props) {
   const { session } = useAuthStore();
+  const { handleNewMessage } = useUrgentOrderStore();
   const [time, setTime] = useState<string>("");
   const late = useRef("on time");
   const router = useRouter();
@@ -47,6 +49,7 @@ export default function UrgentOrderItem({ conversation }: Props) {
   };
 
   const handleGoToChat = () => {
+    handleNewMessage(conversation.id, false);
     router.push({
       pathname: "/chatUrgentOrder/[id]",
       params: {
@@ -80,12 +83,15 @@ export default function UrgentOrderItem({ conversation }: Props) {
     <View style={global_styles.card}>
       <View style={styles.container_texts}>
         <View>
-          <Text>
-            Nombre:{" "}
-            <Text style={{ fontWeight: "bold" }}>
-              {conversation.client_name}
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text>
+              Nombre:{" "}
+              <Text style={{ fontWeight: "bold" }}>
+                {conversation.client_name}
+              </Text>
             </Text>
-          </Text>
+            {conversation.newMessage && <View style={styles.red_dot} />}
+          </View>
           <Text>
             Whatsapp:{" "}
             <Text style={{ fontWeight: "bold" }}>{conversation.from}</Text>
@@ -142,5 +148,12 @@ const styles = StyleSheet.create({
   },
   late: {
     color: colors.danger,
+  },
+  red_dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: colors.danger,
+    marginLeft: 8,
   },
 });

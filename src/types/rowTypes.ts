@@ -14,7 +14,16 @@ export type CategoryForProduct =
   Database["public"]["Tables"]["category_for_product"]["Row"];
 
 export type Conversations =
-  Database["public"]["Tables"]["conversations"]["Row"];
+  Database["public"]["Tables"]["conversations"]["Row"] & {
+    newMessage?: boolean;
+  };
+
+export type Order = Database["public"]["Tables"]["order"]["Row"];
+
+export type OrderProductsProduct =
+  Database["public"]["Tables"]["orders_products"]["Row"] & {
+    product: Product;
+  };
 
 // ? Mixed types for better type inference
 

@@ -1,4 +1,4 @@
-import { Button, Text } from "@rn-vui/themed";
+import { Button, Text } from "@rn-vui/base";
 import { Modal, View, Image, StyleSheet } from "react-native";
 import { images } from "../lib/imagesMap";
 import { colors } from "../styles/global";

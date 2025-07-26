@@ -1,4 +1,4 @@
-import { Button } from "@rn-vui/themed";
+import { Button } from "@rn-vui/base";
 import { router } from "expo-router";
 import { StyleSheet, Text } from "react-native";
 import { global_styles } from "../../src/styles/global";

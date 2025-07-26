@@ -1,5 +1,5 @@
 import { global_styles } from "../../src/styles/global";
-import { Text } from "@rn-vui/themed";
+import { Text } from "@rn-vui/base";
 import { StyleSheet, View } from "react-native";
 import { useGetRestaurants } from "../../src/features/restaurant/hools/useGetRestaurants";
 import Screen from "../../src/components/Screen";

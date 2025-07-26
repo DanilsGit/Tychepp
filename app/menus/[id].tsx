@@ -2,7 +2,7 @@ import { StyleSheet, View } from "react-native";
 import Screen from "../../src/components/Screen";
 import { global_styles } from "../../src/styles/global";
 import { useLocalSearchParams } from "expo-router";
-import { Button, Icon, Image, Text } from "@rn-vui/themed";
+import { Button, Icon, Image, Text } from "@rn-vui/base";
 import { useState } from "react";
 import { CustomAlert } from "../../src/components/CustomAlert";
 import { useAIProducts } from "../../src/features/menu/hooks/useAIProducts";

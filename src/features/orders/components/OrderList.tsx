@@ -1,19 +1,21 @@
 import { FlatList, View } from "react-native";
 import { Text } from "@rn-vui/base";
-import { useUrgentOrderStore } from "../storages/urgentOrdersStorage";
-import UrgentOrderItem from "./UrgentOrderItem";
+import { Order } from "../../../types/rowTypes";
+import OrderItem from "./OrderItem";
 
-export default function UrgentOrdersList() {
-  const { urgentOrders } = useUrgentOrderStore();
+interface Props {
+  orders: Order[];
+}
 
+export default function OrdersList({ orders }: Props) {
   return (
     <FlatList
-      data={urgentOrders}
-      renderItem={({ item }) => <UrgentOrderItem conversation={item} />}
+      data={orders}
+      renderItem={({ item }) => <OrderItem order={item} />}
       keyExtractor={(item) => item.id.toString()}
       ListEmptyComponent={
         <Text style={{ textAlign: "center" }}>
-          Aún no tienes pedidos urgentes.
+          Aún no tienes pedidos de este tipo.
         </Text>
       }
       scrollEnabled={false}

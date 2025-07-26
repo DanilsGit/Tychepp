@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from "react-native";
 import { global_styles } from "../../src/styles/global";
 import { router } from "expo-router";
-import { Button } from "@rn-vui/themed";
+import { Button } from "@rn-vui/base";
 import Screen from "../../src/components/Screen";
 import MenuList from "../../src/features/menu/components/MenuList";
 

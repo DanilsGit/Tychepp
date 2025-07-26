@@ -1,24 +1,38 @@
-import { useEffect, useRef } from "react";
-import { Conversations, ProfileEmployee } from "../../../types/rowTypes";
+import { useEffect, useRef, useState } from "react";
+import {
+  Conversations,
+  Message,
+  ProfileEmployee,
+} from "../../../types/rowTypes";
 import { useAuthStore } from "../../login/stores/authStore";
 import { supabase } from "../../../lib/supabase";
 import { useUrgentOrderStore } from "../storages/urgentOrdersStorage";
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
+import { RealtimeChannel } from "@supabase/supabase-js";
 
 export const useUrgentOrders = () => {
   const { profile } = useAuthStore() as { profile: ProfileEmployee };
+  const [isLoading, setIsLoading] = useState(true);
   const {
-    isLoading,
     setUrgentOrders,
     setStatus,
     addUrgentOrder,
     handleAttendedBy,
+    handleNewMessage,
   } = useUrgentOrderStore();
+
   const retryCountRef = useRef(0);
   const router = useRouter();
   const maxRetries = 5;
   const retryDelay = 2000;
+
+  const lastMessageByClient = (msgs: Message[]) => {
+    if (!Array.isArray(msgs) || msgs.length === 0) return false;
+
+    const lastMessage = msgs[msgs.length - 1];
+    return lastMessage.content?.includes("[TRABAJADOR]") ? false : true;
+  };
 
   useEffect(() => {
     if (!profile || !profile.employee) {
@@ -38,6 +52,13 @@ export const useUrgentOrders = () => {
           },
           async (payload: any) => {
             const incomingData = payload.new as Conversations;
+
+            if (
+              incomingData.attended_by === profile.id &&
+              lastMessageByClient(incomingData.messages as unknown as Message[])
+            ) {
+              handleNewMessage(incomingData.id, true);
+            }
 
             if (incomingData.attended_by) {
               handleAttendedBy(incomingData.id, incomingData.attended_by);
@@ -66,35 +87,8 @@ export const useUrgentOrders = () => {
             }
           }
         )
-        .subscribe((status: string) => {
-          console.log("Subscription status:", status);
-
-          if (status === "SUBSCRIBED") {
-            retryCountRef.current = 0;
-            getUrgentOrders();
-            setStatus("");
-          }
-
-          if (status === "TIMED_OUT") {
-            if (retryCountRef.current < maxRetries) {
-              retryCountRef.current += 1;
-              setStatus(
-                `Reconectanto... (${retryCountRef.current}/${maxRetries})`
-              );
-              setTimeout(() => {
-                subscribe();
-              }, retryDelay);
-            } else {
-              console.error("Máximo de reintentos alcanzado");
-            }
-          }
-
-          if (status === "CLOSED") {
-            setStatus(
-              "Conexión cerrada, comprueba tu conexión a internet y reinicia la aplicación."
-            );
-            setUrgentOrders([]);
-          }
+        .subscribe(async (status: string) => {
+          await statusController(status, subscribe);
         });
       return conversations;
     };
@@ -108,15 +102,15 @@ export const useUrgentOrders = () => {
   }, [profile]);
 
   const getUrgentOrders = async () => {
-    const now = new Date();
-    const sixHoursAgo = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+    const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
+    const isoTimestamp = twelveHoursAgo.toISOString();
 
     const { data, error } = await supabase
       .from("conversations")
       .select("*, restaurant!inner()")
       .eq("restaurant.id", profile.employee.restaurant_id)
       .eq("request_human", true)
-      .gte("updated_at", sixHoursAgo.toISOString())
+      .gte("updated_at", isoTimestamp)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -125,6 +119,52 @@ export const useUrgentOrders = () => {
     }
 
     setUrgentOrders(data || []);
+  };
+
+  const retryConnection = async (subscribe: () => RealtimeChannel) => {
+    if (retryCountRef.current < maxRetries) {
+      retryCountRef.current += 1;
+      console.warn(
+        `Reconnecting... Attempt ${retryCountRef.current}/${maxRetries}`
+      );
+      setStatus(`Reconectando... (${retryCountRef.current}/${maxRetries})`);
+      setTimeout(() => {
+        subscribe();
+      }, retryDelay);
+    } else {
+      setStatus(
+        "Máximo de reintentos alcanzado, por favor cierra la aplicación."
+      );
+    }
+  };
+
+  const statusController = async (
+    status: string,
+    subscribe: () => RealtimeChannel
+  ) => {
+    console.log("UrgentOrders status:", status);
+
+    if (status === "SUBSCRIBED") {
+      retryCountRef.current = 0;
+      await getUrgentOrders();
+      setIsLoading(false);
+      setStatus("");
+    }
+
+    if (status === "TIMED_OUT") {
+      await retryConnection(subscribe);
+    }
+
+    if (status === "CHANNEL_ERROR") {
+      await retryConnection(subscribe);
+    }
+
+    if (status === "CLOSED") {
+      setStatus(
+        "Conexión cerrada, comprueba tu conexión a internet y reinicia la aplicación."
+      );
+      setUrgentOrders([]);
+    }
   };
 
   return { isLoading };

@@ -1,4 +1,4 @@
-import { Icon, Text } from "@rn-vui/themed";
+import { Icon, Text } from "@rn-vui/base";
 import { MenuWithRestaurantName } from "../../../types/rowTypes";
 import { StyleSheet, View } from "react-native";
 import { Link } from "expo-router";

@@ -6,6 +6,8 @@ export const colors = {
   success: "#5cb85c",
   primary: "#337ab7",
   gray: "#6c757d",
+  black: "#000",
+  white: "#fff",
 };
 
 export const global_styles = StyleSheet.create({
@@ -53,5 +55,29 @@ export const global_styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  cancelled_title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: colors.danger,
+    marginBottom: 8,
+  },
+  pending_title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: colors.warning,
+    marginBottom: 8,
+  },
+  confirmed_title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: colors.success,
+    marginBottom: 8,
+  },
+  delivered_title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: colors.black,
+    marginBottom: 8,
   },
 });

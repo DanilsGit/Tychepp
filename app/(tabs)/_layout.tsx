@@ -4,15 +4,18 @@ import { useAuthStore } from "../../src/features/login/stores/authStore";
 import { Alert } from "react-native";
 import { ProfileEmployee } from "../../src/types/rowTypes";
 import { useUrgentOrders } from "../../src/features/orders/hooks/useUrgentOrders";
+import LoaderSpinner from "../../src/components/LoaderSpinner";
+import { useOrders } from "../../src/features/orders/hooks/useOrders";
 
 export default function TabsLayout() {
-  const { session, isLoading, logout } = useAuthStore();
   const { profile } = useAuthStore() as { profile: ProfileEmployee };
+  const { session, isLoading, logout } = useAuthStore();
   const { isLoading: urgentOrdersLoading } = useUrgentOrders();
+  const { isLoading: ordersLoading } = useOrders();
   const router = useRouter();
 
-  if (isLoading || urgentOrdersLoading) {
-    return null;
+  if (isLoading || urgentOrdersLoading || ordersLoading) {
+    return <LoaderSpinner />;
   }
 
   if (!session || !profile) {

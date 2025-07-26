@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import Screen from "../../src/components/Screen";
-import { Text } from "@rn-vui/themed";
+import { Text } from "@rn-vui/base";
 import { global_styles } from "../../src/styles/global";
 import { useUrgentOrderStore } from "../../src/features/orders/storages/urgentOrdersStorage";
 import UrgentOrdersList from "../../src/features/orders/components/UrgentOrderList";
@@ -32,11 +32,7 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     alignSelf: "stretch",
   },
-  mt20: {
-    marginTop: 20,
-  },
   status: {
-    marginTop: 20,
     fontSize: 16,
     color: "blue",
     textAlign: "center",

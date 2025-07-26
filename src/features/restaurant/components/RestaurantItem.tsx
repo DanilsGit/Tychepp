@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { Restaurant } from "../../../types/rowTypes";
-import { Icon, Text } from "@rn-vui/themed";
+import { Icon, Text } from "@rn-vui/base";
 import { colors, global_styles } from "../../../styles/global";
 import { Link } from "expo-router";
 

@@ -1,4 +1,4 @@
-import { Button, Text } from "@rn-vui/themed";
+import { Button, Text } from "@rn-vui/base";
 import { StyleSheet, View } from "react-native";
 import { colors, global_styles } from "../../../styles/global";
 import { EmployeeProfile } from "../../../types/rowTypes";

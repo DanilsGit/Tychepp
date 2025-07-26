@@ -1,5 +1,5 @@
 import { FlatList, View } from "react-native";
-import { Text} from "@rn-vui/themed";
+import { Text} from "@rn-vui/base";
 import { useGetMyEmployees } from "../hooks/useGetMyEmployees";
 import EmployeeItem from "./EmployeeItem";
 
