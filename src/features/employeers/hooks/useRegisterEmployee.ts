@@ -13,9 +13,6 @@ export const useRegisterEmployee = () => {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (field: string, value: string) => {
-    if (field === "restaurantCode") {
-      value = value.trim().toUpperCase();
-    }
     setParameters((prev) => ({
       ...prev,
       [field]: value.trim(),
@@ -49,7 +46,7 @@ export const useRegisterEmployee = () => {
     const { data: restaurant, error: restaurantError } = await supabase
       .from("restaurant")
       .select("id")
-      .eq("restaurant_code", parameters.restaurantCode)
+      .eq("restaurant_code", parameters.restaurantCode.toUpperCase())
       .single();
 
     if (restaurantError || !restaurant) {

@@ -1,7 +1,7 @@
 import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
 import Screen from "../../src/components/Screen";
 import { Text } from "@rn-vui/base";
-import { colors, global_styles } from "../../src/styles/global";
+import { global_styles } from "../../src/styles/global";
 import { useOrderStore } from "../../src/features/orders/storages/ordersStorage";
 import OrdersList from "../../src/features/orders/components/OrderList";
 import { useRef, useState } from "react";
@@ -60,7 +60,7 @@ export default function Pedidos() {
       <View>
         <TouchableOpacity
           onPress={toggleExpand}
-          style={styles.delivered_container}
+          style={global_styles.row_between}
         >
           <Text style={global_styles.delivered_title}>Pedidos Despachados</Text>
           <Text>{expanded ? "▼" : "▲"}</Text>
@@ -92,10 +92,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "blue",
     textAlign: "center",
-  },
-  delivered_container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
+  }
 });

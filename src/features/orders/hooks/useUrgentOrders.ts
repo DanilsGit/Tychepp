@@ -124,17 +124,10 @@ export const useUrgentOrders = () => {
   const retryConnection = async (subscribe: () => RealtimeChannel) => {
     if (retryCountRef.current < maxRetries) {
       retryCountRef.current += 1;
-      console.warn(
-        `Reconnecting... Attempt ${retryCountRef.current}/${maxRetries}`
-      );
-      setStatus(`Reconectando... (${retryCountRef.current}/${maxRetries})`);
+      setStatus(`Te has desconectado, reinicia la aplicación`);
       setTimeout(() => {
         subscribe();
       }, retryDelay);
-    } else {
-      setStatus(
-        "Máximo de reintentos alcanzado, por favor cierra la aplicación."
-      );
     }
   };
 

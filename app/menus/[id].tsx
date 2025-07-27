@@ -1,36 +1,49 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import Screen from "../../src/components/Screen";
-import { global_styles } from "../../src/styles/global";
+import { colors, global_styles } from "../../src/styles/global";
 import { useLocalSearchParams } from "expo-router";
 import { Button, Icon, Image, Text } from "@rn-vui/base";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CustomAlert } from "../../src/components/CustomAlert";
 import { useAIProducts } from "../../src/features/menu/hooks/useAIProducts";
-import { useMenuProducts } from "../../src/features/menu/hooks/useMenuProducts";
-import ProductList from "../../src/features/menu/components/ProductList";
 import { useGetCategories } from "../../src/features/menu/hooks/useGetCategories";
+import { useGetMenuProductsById } from "../../src/features/menu/hooks/useGetProductsMenuById";
+import LoaderSpinner from "../../src/components/LoaderSpinner";
+import { useMenuProductsStore } from "../../src/features/menu/storages/menuProductsStorage";
+import ProductAIList from "../../src/features/menu/components/ProductAIList";
+import { useDebouncedCallback } from "use-debounce";
+import ProductByCategoryList from "../../src/features/menu/components/ProductsByCategory";
 
 export default function AddProduct() {
   const { id } = useLocalSearchParams();
-  const { categories } = useGetCategories();
+  const { categories, loading: loadingCategories } = useGetCategories();
+  const { loading } = useGetMenuProductsById(id.toString());
   const [alertVisible, setAlertVisible] = useState(false);
-  const { products, saveProduct, addProduct, deleteProduct } = useMenuProducts(
-    id.toString()
-  );
+  const { products, addProduct, saveAnnotations, annotations, setAnnotations } =
+    useMenuProductsStore();
 
   const {
     pickImage,
     images,
     loading: loadingAI,
-    status,
     productsGenerated,
     saveAIProducts,
     deleteAIProduct,
   } = useAIProducts({
     menu_id: id.toString(),
-    saveProduct,
     categories,
   });
+
+  useEffect(() => {
+    handleSaveAnnotations(annotations);
+  }, [annotations]);
+
+  const handleSaveAnnotations = useDebouncedCallback(
+    async (newAnnotations: string) => {
+      await saveAnnotations(newAnnotations, Number(id));
+    },
+    2000
+  );
 
   const showAlert = () => {
     setAlertVisible(true);
@@ -45,29 +58,34 @@ export default function AddProduct() {
     setAlertVisible(false);
   };
 
-  if (loadingAI) {
-    return (
-      <Screen style={styles.container}>
-        <Text style={global_styles.title}>{status}</Text>
-      </Screen>
-    );
+  if (loadingAI || loading || loadingCategories) {
+    return <LoaderSpinner />;
   }
 
   return (
     <Screen style={styles.container}>
+      <Text style={global_styles.title}>Anotaciones del menú</Text>
+      <TextInput
+        style={global_styles.input}
+        placeholder="Escribe aquí las anotaciones generales del menú, por ejemplo: Todas las picadas llevan papas a la francesa, yuca, tomate... Todos los asados llevan... Todos los platos de mariscos llevan..."
+        placeholderTextColor={colors.gray}
+        multiline
+        onChangeText={(text) => setAnnotations(text)}
+        value={annotations}
+      />
+
       <Text style={global_styles.title}>Productos del menú</Text>
 
       <Button onPress={showAlert}>
-        <Icon type="font-awesome" name="camera" /> Utiliza la IA sin
-        complicaciones
+        <Icon type="font-awesome" name="camera" /> Generar productos con foto
       </Button>
 
       <CustomAlert
         visible={alertVisible}
         imageSource={"wrong_menu"}
-        title="Selecciona una buena foto"
+        title="Selecciona una foto escaneada"
         message="Sube el menú legible, sin reflejos y sin objetos que lo tapen."
-        warningMessage="Evita esto"
+        warningMessage="Preferiblemente una foto escaneada"
         onOk={handleOk}
         onCancel={handleCancel}
       />
@@ -80,7 +98,8 @@ export default function AddProduct() {
               <Image
                 key={index}
                 source={{ uri: image }}
-                style={{ width: 170, height: 170, marginTop: 20 }}
+                style={{ width: 300, height: 500 }}
+                resizeMode="contain"
               />
             ))}
           </View>
@@ -89,11 +108,10 @@ export default function AddProduct() {
             La IA puede cometer errores, por favor revisa los productos antes de
             guardarlos con el botón azul de cada producto.
           </Text>
-          <ProductList
-            saveProduct={saveAIProducts}
+          <ProductAIList
             products={productsGenerated}
-            categories={categories}
-            deleteProduct={deleteAIProduct}
+            saveAIProducts={saveAIProducts}
+            deleteAIProduct={deleteAIProduct}
           />
         </View>
       )}
@@ -103,14 +121,9 @@ export default function AddProduct() {
         <Text>
           Puedes editar los productos actuales, o agregar nuevos productos
         </Text>
-        <ProductList
-          saveProduct={saveProduct}
-          products={products}
-          categories={categories}
-          deleteProduct={deleteProduct}
-        />
+        <ProductByCategoryList products={products} categories={categories} />
         <Button
-          onPress={addProduct}
+          onPress={() => addProduct(Number(id))}
           icon={<Icon type="font-awesome" name="plus" />}
           title="Agregar nuevo producto"
         />
@@ -125,12 +138,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     width: "100%",
     justifyContent: "space-between",
-    gap: 10,
+    gap: 30,
   },
   images_container: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    gap: 10,
   },
 });

@@ -36,7 +36,7 @@ export default function CreateRestaurant() {
   return (
     <Screen style={styles.container}>
       <View style={[styles.verticallySpaced]}>
-      <Text style={global_styles.title}>Nuevo Restaurante</Text>
+        <Text style={global_styles.title}>Nuevo Restaurante</Text>
         <Input
           label="Nombre del Restaurante"
           leftIcon={{ type: "font-awesome", name: "pencil" }}
@@ -50,15 +50,17 @@ export default function CreateRestaurant() {
           leftIcon={{ type: "font-awesome", name: "pencil" }}
           onChangeText={(text) => handleChange("welcome_message", text)}
           value={parameters.welcome_message}
-          placeholder="¡Hola! Bienvenido a nuestro restaurante..."
+          placeholder="¡Hola! Atendemos por orden de llegada, por favor escribe tu pedido, dirección, nombre y número de contacto..."
           autoCapitalize={"none"}
+          multiline
+          numberOfLines={10}
         />
         <Input
-          label="Número de WhatsApp"
+          label="Número de WhatsApp con el código de país"
           leftIcon={{ type: "font-awesome", name: "phone" }}
           onChangeText={(text) => handleChange("whatsapp_number", text)}
           value={parameters.whatsapp_number}
-          placeholder="+57----------"
+          placeholder="57----------"
           autoCapitalize={"none"}
           keyboardType="phone-pad"
         />

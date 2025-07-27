@@ -8,6 +8,7 @@ export const colors = {
   gray: "#6c757d",
   black: "#000",
   white: "#fff",
+  purple: "#6f42c1",
 };
 
 export const global_styles = StyleSheet.create({
@@ -22,6 +23,18 @@ export const global_styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
     marginVertical: 10,
+  },
+  subTitleDivider: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    marginVertical: 10,
+    width: "100%",
+    borderBottomWidth: 2,
+    borderBottomColor: colors.danger,
+    paddingVertical: 5,
+    borderTopColor: colors.danger,
+    borderTopWidth: 2,
   },
   itemTitle: {
     fontSize: 16,
@@ -79,5 +92,24 @@ export const global_styles = StyleSheet.create({
     fontWeight: "bold",
     color: colors.black,
     marginBottom: 8,
+  },
+  input: {
+    borderBottomColor: colors.primary,
+    borderBottomWidth: 1,
+    fontSize: 16,
+    marginBottom: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    width: "90%",
+    color: colors.black,
+  },
+  row_between: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 15,
+    borderRadius: 5,
+    borderBottomColor: colors.gray,
+    borderBottomWidth: 1,
   },
 });

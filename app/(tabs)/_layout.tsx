@@ -6,6 +6,7 @@ import { ProfileEmployee } from "../../src/types/rowTypes";
 import { useUrgentOrders } from "../../src/features/orders/hooks/useUrgentOrders";
 import LoaderSpinner from "../../src/components/LoaderSpinner";
 import { useOrders } from "../../src/features/orders/hooks/useOrders";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TabsLayout() {
   const { profile } = useAuthStore() as { profile: ProfileEmployee };
@@ -47,9 +48,30 @@ export default function TabsLayout() {
 
   return (
     <Tabs screenOptions={{ headerShown: false }}>
-      <Tabs.Screen name="atencion" />
-      <Tabs.Screen name="pedidos" />
-      <Tabs.Screen name="configuracion" />
+      <Tabs.Screen
+        name="atencion"
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="chatbubbles" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="pedidos"
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="list" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="configuracion"
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="settings" size={24} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

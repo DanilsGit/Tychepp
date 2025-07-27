@@ -1,16 +1,30 @@
 import { StyleSheet, View } from "react-native";
 import { Restaurant } from "../../../types/rowTypes";
-import { Icon, Text } from "@rn-vui/base";
+import { Button, Icon, Text } from "@rn-vui/base";
 import { colors, global_styles } from "../../../styles/global";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 interface Props {
   restaurant: Restaurant;
 }
 
 export default function RestaurantItem({ restaurant }: Props) {
+  const router = useRouter();
+  const handleEditRestaurant = () => {
+    router.push({
+      pathname: "/editRestaurant/[id]",
+      params: {
+        id: String(restaurant.id),
+      },
+    });
+  };
+
   return (
-    <Link href={`/dashboard`} style={[styles.container, global_styles.card]}>
+    <Button
+      style={[styles.container, global_styles.card]}
+      onPress={handleEditRestaurant}
+      buttonStyle={global_styles.card}
+    >
       <View style={styles.container2}>
         <View>
           <Text style={global_styles.itemTitle}>{restaurant.name}</Text>
@@ -21,7 +35,7 @@ export default function RestaurantItem({ restaurant }: Props) {
         </View>
         <Icon name="pencil" type="font-awesome" />
       </View>
-    </Link>
+    </Button>
   );
 }
 

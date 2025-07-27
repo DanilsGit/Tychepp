@@ -6,7 +6,8 @@ export const createMenu = async (menuData: MenuUpdate) =>
   api.post<Menu>("/create-menu", menuData);
 
 export const generateProductsByAI = async (
-  base64Strings: (string | undefined)[],
+  base64String: string | undefined,
   menu_id: string,
   categories: CategoryForProduct[]
-) => api.post("/create-ai-products-menu", { base64Strings, menu_id, categories });
+) =>
+  api.post("/create-ai-products-menu", { base64String, menu_id, categories });
