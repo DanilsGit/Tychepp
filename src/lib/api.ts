@@ -3,7 +3,7 @@ import { supabase } from "./supabase";
 import { env } from "../../env";
 
 const API_URL = `${env.FUNCTIONS_URL}`;
-// Crear una instancia de Axios (opcional, pero recomendable)
+
 const api = axios.create({
   baseURL: API_URL,
 });

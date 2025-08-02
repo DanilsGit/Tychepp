@@ -32,8 +32,8 @@ export default function Pedidos() {
   return (
     <Screen style={styles.container}>
       <Text style={global_styles.title}>Pedidos</Text>
-      <Text>
-        Aquí puedes ver todos los pedidos realizados en tu restaurante. Los
+      <Text style={global_styles.subTitle}>
+        Aquí puedes ver todos los pedidos realizados en las últimas 6 horas. Los
         pedidos se actualizan en tiempo real.
       </Text>
 
@@ -74,6 +74,12 @@ export default function Pedidos() {
           />
         </Animated.View>
       </View>
+      <View>
+        <Text style={global_styles.waiting_title}>Pedidos En Espera de Respuesta</Text>
+        <OrdersList
+          orders={orders.filter((order) => order.status === "WAITING_RESPONSE")}
+        />
+      </View>
     </Screen>
   );
 }
@@ -92,5 +98,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "blue",
     textAlign: "center",
-  }
+  },
 });

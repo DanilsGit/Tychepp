@@ -7,6 +7,7 @@ import { useAuthStore } from "../../login/stores/authStore";
 import { supabase } from "../../../lib/supabase";
 import { useRouter } from "expo-router";
 import { useUrgentOrderStore } from "../storages/urgentOrdersStorage";
+import { PlatformAlert } from "../../../components/PlatformAlert";
 
 interface Props {
   conversation: Conversations;
@@ -32,7 +33,7 @@ export default function UrgentOrderItem({ conversation }: Props) {
     }
 
     if (data?.length === 0) {
-      Alert.alert(
+      PlatformAlert(
         "Pedido atendido",
         "El pedido ya ha sido atendido por otro usuario."
       );

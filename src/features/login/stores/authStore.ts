@@ -40,22 +40,27 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   getProfile: async () => {
-    const { session } = useAuthStore.getState();
-    if (!session?.user) throw new Error("No user on the session!");
+    try {
+      const { session } = useAuthStore.getState();
+      if (!session?.user) return;
 
-    const { data, error, status } = await supabase
-      .from("profiles")
-      .select(`*, employee(*, restaurant(*))`)
-      .eq("id", session.user.id)
-      .single();
+      const { data, error, status } = await supabase
+        .from("profiles")
+        .select(`*, employee(*, restaurant(*))`)
+        .eq("id", session.user.id)
+        .single();
 
-    if (error && status !== 406) {
-      throw error;
+      if (error && status !== 406) {
+        throw error;
+      }
+      if (!data) {
+        throw new Error("No profile data found!");
+      }
+
+      set({ profile: data });
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      set({ profile: null, isLoading: false });
     }
-    if (!data) {
-      throw new Error("No profile data found!");
-    }
-
-    set({ profile: data });
   },
 }));

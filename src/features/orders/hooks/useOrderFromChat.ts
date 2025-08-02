@@ -11,6 +11,7 @@ import { supabase } from "../../../lib/supabase";
 
 import { useGetAllMenusProducts } from "../../menu/hooks/useGetAllMenusProducts";
 import { useUrgentOrderStore } from "../storages/urgentOrdersStorage";
+import { PlatformAlert } from "../../../components/PlatformAlert";
 
 export interface ProductFromChat {
   id: number | null;
@@ -43,7 +44,7 @@ export const useOrderFromChat = (
     }
 
     if (!conversation) {
-      Alert.alert(
+      PlatformAlert(
         "Error",
         "No hay conversación disponible para crear la orden."
       );
@@ -55,7 +56,7 @@ export const useOrderFromChat = (
     );
 
     if (firstWorkerMessage === -1) {
-      Alert.alert("Escribe al menos un mensaje para crear la orden");
+      PlatformAlert("Escribe al menos un mensaje para crear la orden");
       return;
     }
 
@@ -129,13 +130,13 @@ export const useOrderFromChat = (
     }
 
     if (orderItems.length === 0) {
-      Alert.alert("No hay productos en la orden");
+      PlatformAlert("No hay productos en la orden");
       return;
     }
 
     const nullItems = orderItems.filter((item) => item.id === null);
     if (nullItems.length > 0) {
-      Alert.alert(
+      PlatformAlert(
         "Faltan productos",
         "Por favor, asegúrate de que todos los productos tengan un precio asignado."
       );
@@ -203,14 +204,14 @@ export const useOrderFromChat = (
         conversation.from
       );
 
-      Alert.alert("Éxito", "La orden ha sido creada y confirmada.");
+      PlatformAlert("Éxito", "La orden ha sido creada y confirmada.");
 
       setOrderItems([]);
       setVisible(false);
       setCalled(false);
     } catch (error) {
       console.error("Error creating order:", error);
-      Alert.alert(
+      PlatformAlert(
         "Error al crear la orden",
         error instanceof Error ? error.message : "Error desconocido"
       );

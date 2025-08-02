@@ -7,13 +7,14 @@ import {
 import { useAuthStore } from "../../login/stores/authStore";
 import { supabase } from "../../../lib/supabase";
 import { useUrgentOrderStore } from "../storages/urgentOrdersStorage";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 import { useRouter } from "expo-router";
-import { RealtimeChannel } from "@supabase/supabase-js";
 
 export const useUrgentOrders = () => {
   const { profile } = useAuthStore() as { profile: ProfileEmployee };
   const [isLoading, setIsLoading] = useState(true);
+  const [retries, setRetries] = useState(0);
+
   const {
     setUrgentOrders,
     setStatus,
@@ -22,10 +23,8 @@ export const useUrgentOrders = () => {
     handleNewMessage,
   } = useUrgentOrderStore();
 
-  const retryCountRef = useRef(0);
-  const router = useRouter();
-  const maxRetries = 5;
   const retryDelay = 2000;
+  const router = useRouter();
 
   const lastMessageByClient = (msgs: Message[]) => {
     if (!Array.isArray(msgs) || msgs.length === 0) return false;
@@ -39,37 +38,44 @@ export const useUrgentOrders = () => {
       return;
     }
 
-    const subscribe = () => {
-      const conversations = supabase
-        .channel("conversations_update")
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "conversations",
-            filter: `to=eq.${profile.employee.restaurant.whatsapp_number}`,
-          },
-          async (payload: any) => {
-            const incomingData = payload.new as Conversations;
+    const conversations = supabase
+      .channel("conversations_update")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "conversations",
+          filter: `to=eq.${profile.employee.restaurant.whatsapp_number}`,
+        },
+        async (payload: any) => {
+          const incomingData = payload.new as Conversations;
 
-            if (
-              incomingData.attended_by === profile.id &&
-              lastMessageByClient(incomingData.messages as unknown as Message[])
-            ) {
-              handleNewMessage(incomingData.id, true);
-            }
+          if (
+            incomingData.attended_by === profile.id &&
+            lastMessageByClient(incomingData.messages as unknown as Message[])
+          ) {
+            handleNewMessage(incomingData.id, true);
+          }
 
-            if (incomingData.attended_by) {
-              handleAttendedBy(incomingData.id, incomingData.attended_by);
-              return;
-            }
+          if (incomingData.attended_by) {
+            handleAttendedBy(incomingData.id, incomingData.attended_by);
+            return;
+          }
 
-            if (incomingData.request_human && !incomingData.attended_by) {
-              addUrgentOrder(incomingData);
+          if (incomingData.request_human && !incomingData.attended_by) {
+            addUrgentOrder(incomingData);
 
+            if (Platform.OS === "web") {
+              const confirmed = window.confirm(
+                "Nuevo chat urgente. ¿Deseas ir a los chats?"
+              );
+              if (confirmed) {
+                router.push("/atencion");
+              }
+            } else {
               Alert.alert(
-                "Nuevo chat",
+                "Nuevo chat urgente",
                 "Tienes un nuevo chat que necesita atención.",
                 [
                   {
@@ -86,24 +92,21 @@ export const useUrgentOrders = () => {
               );
             }
           }
-        )
-        .subscribe(async (status: string) => {
-          await statusController(status, subscribe);
-        });
-      return conversations;
-    };
-
-    const conversations = subscribe();
+        }
+      )
+      .subscribe(async (status: string) => {
+        await statusController(status);
+      });
 
     return () => {
       supabase.removeChannel(conversations);
       setUrgentOrders([]);
     };
-  }, [profile]);
+  }, [profile, retries]);
 
   const getUrgentOrders = async () => {
-    const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
-    const isoTimestamp = twelveHoursAgo.toISOString();
+    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+    const isoTimestamp = sixHoursAgo.toISOString();
 
     const { data, error } = await supabase
       .from("conversations")
@@ -117,48 +120,38 @@ export const useUrgentOrders = () => {
       console.error("Error fetching urgent orders:", error);
       return;
     }
-
     setUrgentOrders(data || []);
   };
 
-  const retryConnection = async (subscribe: () => RealtimeChannel) => {
-    if (retryCountRef.current < maxRetries) {
-      retryCountRef.current += 1;
-      setStatus(`Te has desconectado, reinicia la aplicación`);
-      setTimeout(() => {
-        subscribe();
-      }, retryDelay);
-    }
+  const retryConnection = async () => {
+    setRetries((prev) => prev + 1);
+    setStatus(
+      `Reintentando (${retries} veces) Si tarda reinicia la aplicación`
+    );
+    setTimeout(() => {
+      setRetries((prev) => prev + 1);
+    }, retryDelay);
   };
 
-  const statusController = async (
-    status: string,
-    subscribe: () => RealtimeChannel
-  ) => {
+  const statusController = async (status: string) => {
     console.log("UrgentOrders status:", status);
 
     if (status === "SUBSCRIBED") {
-      retryCountRef.current = 0;
       await getUrgentOrders();
       setIsLoading(false);
       setStatus("");
     }
 
-    if (status === "TIMED_OUT") {
-      await retryConnection(subscribe);
-    }
-
-    if (status === "CHANNEL_ERROR") {
-      await retryConnection(subscribe);
+    if (status === "TIMED_OUT" || status === "CHANNEL_ERROR") {
+      retryConnection();
     }
 
     if (status === "CLOSED") {
-      setStatus(
-        "Conexión cerrada, comprueba tu conexión a internet y reinicia la aplicación."
-      );
-      setUrgentOrders([]);
+      setStatus("Reconectando... Si tarda reinicia la aplicación");
     }
   };
 
-  return { isLoading };
+  return {
+    isLoading,
+  };
 };

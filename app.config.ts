@@ -6,9 +6,9 @@ const PROJECT_SLUG = "agile-calling";
 const OWNER = "danils-expo";
 
 // PRODUCTION
-const APP_NAME = "Agile Calling";
-const APP_BUNDLE_IDENTIFIER = "com.danilsexpo.agilecalling";
-const PACKAGE_NAME = "com.danilsexpo.agilecalling";
+const APP_NAME = "Tychepp";
+const APP_BUNDLE_IDENTIFIER = "com.danilsexpo.tychepp";
+const PACKAGE_NAME = "com.danilsexpo.tychepp";
 const ICON = "./assets/icon.png";
 const ADAPTATIVE_ICON = "./assets/adaptive-icon.png";
 const SCHEME = "app-scheme";

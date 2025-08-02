@@ -98,6 +98,12 @@ export const useChatUrgentOrder = (conversationId: number) => {
     setIsSending(true);
 
     try {
+      console.log("Sending message to WhatsApp:", {
+        conversationId,
+        inputText,
+        restaurant_number: conversation.to,
+        client_number: conversation.from,
+      });
       await sendMessageToWhatsapp(
         conversationId,
         inputText,
@@ -106,12 +112,12 @@ export const useChatUrgentOrder = (conversationId: number) => {
       );
     } catch (error) {
       console.error("Error sending message:", error);
-      setIsSending(false);
       return;
+    } finally {
+      setIsSending(false);
     }
 
     setInputText("");
-    setIsSending(false);
   };
 
   const retryConnection = async (subscribe: () => RealtimeChannel) => {

@@ -4,35 +4,25 @@ import { supabase } from "../../../lib/supabase";
 import { useState } from "react";
 import { sendConfirmOrder, sendRejectOrder } from "../api/messages";
 import { useAuthStore } from "../../login/stores/authStore";
+import { PlatformAlert } from "../../../components/PlatformAlert";
 
 export const useOrderStatus = (order: Order) => {
   const { profile } = useAuthStore() as { profile: ProfileEmployee };
   const [loading, setLoading] = useState(false);
   const [cancelationReason, setCancellationReason] = useState("");
+  const [deliveryPrice, setDeliveryPrice] = useState(0);
 
   const confirmOrder = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from("order")
-        .update({ status: "CONFIRMED" })
-        .eq("id", order.id);
-
-      if (error) {
-        Alert.alert(
-          "Error",
-          "No se pudo confirmar la orden. Por favor, inténtalo de nuevo más tarde."
-        );
-        return;
-      }
-
       await sendConfirmOrder(
         order.id,
         profile.employee.restaurant.whatsapp_number,
-        order.client_number
+        order.client_number,
+        deliveryPrice
       );
     } catch (error) {
-      Alert.alert(
+      PlatformAlert(
         "Error",
         "No se pudo enviar el mensaje de confirmación al cliente. Por favor, inténtalo de nuevo más tarde."
       );
@@ -40,7 +30,7 @@ export const useOrderStatus = (order: Order) => {
       return;
     } finally {
       setLoading(false);
-      Alert.alert(
+      PlatformAlert(
         `Orden #00${order.id} Confirmada`,
         `Se le ha enviado el mensaje de confirmación al cliente.`
       );
@@ -59,9 +49,9 @@ export const useOrderStatus = (order: Order) => {
         throw new Error(error.message);
       }
 
-      Alert.alert("Éxito", "La orden ha sido despachada correctamente");
+      PlatformAlert("Éxito", "La orden ha sido despachada correctamente");
     } catch (error) {
-      Alert.alert("Error", "Ocurrió un error al despachar la orden");
+      PlatformAlert("Error", "Ocurrió un error al despachar la orden");
     } finally {
       setLoading(false);
     }
@@ -69,7 +59,7 @@ export const useOrderStatus = (order: Order) => {
 
   const cancelOrder = async () => {
     if (!cancelationReason.trim()) {
-      Alert.alert("Error", "Por favor, escribe un motivo de cancelación.");
+      PlatformAlert("Error", "Por favor, escribe un motivo de cancelación.");
       return;
     }
 
@@ -82,13 +72,13 @@ export const useOrderStatus = (order: Order) => {
         order.client_number
       );
 
-      Alert.alert("Éxito", "La orden ha sido cancelada correctamente.");
+      PlatformAlert("Éxito", "La orden ha sido cancelada correctamente.");
     } catch (error) {
       console.error(
         "Error al cancelar la orden:",
         error instanceof Error ? error.message : error
       );
-      Alert.alert("Error", "No se pudo cancelar la orden. Inténtalo de nuevo.");
+      PlatformAlert("Error", "No se pudo cancelar la orden. Inténtalo de nuevo.");
       return;
     } finally {
       setLoading(false);
@@ -103,5 +93,7 @@ export const useOrderStatus = (order: Order) => {
     setCancellationReason,
     cancelationReason,
     confirmOrder,
+    deliveryPrice,
+    setDeliveryPrice,
   };
 };

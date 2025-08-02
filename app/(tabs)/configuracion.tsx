@@ -4,6 +4,7 @@ import { Button, Input, Text } from "@rn-vui/base";
 import { supabase } from "../../src/lib/supabase";
 import { useAuthStore } from "../../src/features/login/stores/authStore";
 import { global_styles } from "../../src/styles/global";
+import { PlatformAlert } from "../../src/components/PlatformAlert";
 
 export default function Configuracion() {
   const { session, profile, logout } = useAuthStore();
@@ -26,10 +27,10 @@ export default function Configuracion() {
       if (error) {
         throw error;
       }
-      Alert.alert("Profile updated successfully!");
+      PlatformAlert("Profile updated successfully!");
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert(error.message);
+        PlatformAlert(error.message);
       }
     } finally {
       setLoading(false);

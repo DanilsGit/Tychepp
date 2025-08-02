@@ -22,7 +22,7 @@ export type Order = Database["public"]["Tables"]["order"]["Row"];
 
 export type OrderProductsProduct =
   Database["public"]["Tables"]["orders_products"]["Row"] & {
-    product: Product;
+    product: Product & { category_for_product: CategoryForProduct };
   };
 
 // ? Mixed types for better type inference

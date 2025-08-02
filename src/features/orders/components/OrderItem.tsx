@@ -7,6 +7,7 @@ import { useOrderItem } from "../hooks/useOrderItem";
 import { useState } from "react";
 import CancelOrderModal from "../Modals/CancelOrderModal";
 import { useOrderStatus } from "../hooks/useOrderStatus";
+import AcceptOrderModal from "../Modals/ConfirmOrderModal";
 
 interface Props {
   order: Order;
@@ -15,6 +16,7 @@ interface Props {
 export default function OrderItem({ order }: Props) {
   const { late, time, visible, setVisible } = useOrderItem(order);
   const [visibleCancel, setVisibleCancel] = useState(false);
+  const [visibleAccept, setVisibleAccept] = useState(false);
   const { loading, sendDelivery } = useOrderStatus(order);
 
   return (
@@ -57,13 +59,22 @@ export default function OrderItem({ order }: Props) {
 
       <View style={styles.buttonsContainer}>
         {order.status === "PENDING" && (
-          <Button
-            title="Cancelar"
-            color="error"
-            onPress={() => setVisibleCancel(true)}
-            loading={loading}
-            disabled={loading}
-          />
+          <>
+            <Button
+              title="Cancelar"
+              color="error"
+              onPress={() => setVisibleCancel(true)}
+              loading={loading}
+              disabled={loading}
+            />
+            <Button
+              title="Aceptar"
+              color="success"
+              onPress={() => setVisibleAccept(true)}
+              loading={loading}
+              disabled={loading}
+            />
+          </>
         )}
         <Button
           title="Ver detalles"
@@ -88,6 +99,13 @@ export default function OrderItem({ order }: Props) {
         <CancelOrderModal
           visible={visibleCancel}
           onExit={() => setVisibleCancel(false)}
+          order={order}
+        />
+      )}
+      {visibleAccept && (
+        <AcceptOrderModal
+          visible={visibleAccept}
+          onExit={() => setVisibleAccept(false)}
           order={order}
         />
       )}

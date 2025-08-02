@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { Alert } from "react-native";
 import { OrderProductsProduct } from "../../../types/rowTypes";
+import { PlatformAlert } from "../../../components/PlatformAlert";
 
 export const useOrderDetails = (orderId: number) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -19,11 +20,11 @@ export const useOrderDetails = (orderId: number) => {
   const getOrderDetails = async () => {
     const { data, error } = await supabase
       .from("orders_products")
-      .select("*, product(*)")
+      .select("*, product(*, category_for_product(*))")
       .eq("order_id", orderId);
 
     if (error) {
-      Alert.alert(
+      PlatformAlert(
         "Error",
         "No se pudieron cargar los detalles de la orden. Por favor, inténtalo de nuevo más tarde."
       );

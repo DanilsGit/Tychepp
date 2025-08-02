@@ -53,23 +53,30 @@ export default function ChatUrgentOrder() {
   const styles = generateStyles(insets.top, insets.bottom);
 
   const handleCreateOrderFromChat = () => {
-    Alert.alert(
-      "¿Todo listo?",
-      "¿Conoces los productos, la dirección, el nombre del cliente y todo lo necesario?",
-      [
-        {
-          text: "No aún no",
-          style: "destructive",
-        },
-        {
-          text: "Claro que sí",
-          style: "default",
-          onPress: () => {
-            createOrderFromChat();
+    if (Platform.OS === "web") {
+      const confirmed = window.confirm(
+        "¿Conoces los productos, la dirección, el nombre del cliente y todo lo necesario?"
+      );
+      if (confirmed) createOrderFromChat();
+    } else {
+      Alert.alert(
+        "¿Todo listo?",
+        "¿Conoces los productos, la dirección, el nombre del cliente y todo lo necesario?",
+        [
+          {
+            text: "No aún no",
+            style: "destructive",
           },
-        },
-      ]
-    );
+          {
+            text: "Claro que sí",
+            style: "default",
+            onPress: () => {
+              createOrderFromChat();
+            },
+          },
+        ]
+      );
+    }
   };
 
   if (isGeneratingItems) {

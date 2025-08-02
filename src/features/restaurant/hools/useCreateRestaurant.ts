@@ -3,6 +3,7 @@ import { Alert } from "react-native";
 import { supabase } from "../../../lib/supabase";
 import { router } from "expo-router";
 import { useAuthStore } from "../../login/stores/authStore";
+import { PlatformAlert } from "../../../components/PlatformAlert";
 
 export const useCreateRestaurant = () => {
   const { session } = useAuthStore();
@@ -28,12 +29,12 @@ export const useCreateRestaurant = () => {
       !parameters.welcome_message ||
       !parameters.whatsapp_number
     ) {
-      Alert.alert("Advertencia", "Todos los campos son obligatorios.");
+      PlatformAlert("Advertencia", "Todos los campos son obligatorios.");
       return;
     }
 
     if (!parameters.whatsapp_number.startsWith("+")) {
-      Alert.alert(
+      PlatformAlert(
         "Advertencia",
         "El número de WhatsApp debe comenzar con '+'. Por ejemplo: +57..."
       );
@@ -44,10 +45,10 @@ export const useCreateRestaurant = () => {
     try {
       const { error } = await supabase.from("restaurant").insert(parameters);
       if (error) throw error;
-      Alert.alert("Éxito", "Restaurante creado exitosamente.");
+      PlatformAlert("Éxito", "Restaurante creado exitosamente.");
       router.back();
     } catch (error) {
-      Alert.alert(
+      PlatformAlert(
         "Error",
         "Ocurrió un error al crear el restaurante. Por favor, inténtalo de nuevo."
       );

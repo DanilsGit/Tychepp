@@ -5,6 +5,7 @@ import { generateProductsByAI } from "../apis/menu";
 import { CategoryForProduct, Product } from "../../../types/rowTypes";
 import { Alert } from "react-native";
 import { useMenuProductsStore } from "../storages/menuProductsStorage";
+import { PlatformAlert } from "../../../components/PlatformAlert";
 
 interface Props {
   menu_id: string;
@@ -100,19 +101,19 @@ export const useAIProducts = ({ menu_id, categories }: Props) => {
       );
 
       if (products.length === 0) {
-        Alert.alert(
+        PlatformAlert(
           "No se encontraron productos",
           "La IA no pudo extraer productos del menú. Por favor, intenta con otra imagen o revisa la calidad de la imagen."
         );
       } else {
-        Alert.alert(
+        PlatformAlert(
           "La IA puede cometer errores",
           `Se han generado ${products.length} productos. Por favor, revisa bien el cada uno antes de guardarlos.`
         );
       }
     } catch (error) {
       console.error("Error al obtener el texto del menú:", error);
-      Alert.alert(
+      PlatformAlert(
         "Servicio no disponible",
         "No se pudo procesar la imagen. Por favor, intenta más tarde."
       );

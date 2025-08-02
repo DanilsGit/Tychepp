@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const colors = {
   warning: "#f0ad4e",
+  warningLight: "#f7ecb5",
   danger: "#d9534f",
   success: "#5cb85c",
   primary: "#337ab7",
@@ -85,6 +86,12 @@ export const global_styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: colors.success,
+    marginBottom: 8,
+  },
+  waiting_title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: colors.purple,
     marginBottom: 8,
   },
   delivered_title: {

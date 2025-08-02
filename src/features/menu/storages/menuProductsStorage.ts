@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { CategoryForProduct, Product } from "../../../types/rowTypes";
 import { Alert } from "react-native";
 import { supabase } from "../../../lib/supabase";
+import { PlatformAlert } from "../../../components/PlatformAlert";
 
 interface MenuProducts {
   products: Product[];
@@ -43,10 +44,9 @@ export const useMenuProductsStore = create<MenuProducts>((set, get) => ({
       console.log("Annotations updated successfully");
     } catch (error) {
       console.error("Error setting annotations:", error);
-      Alert.alert(
+      PlatformAlert(
         "Error",
-        "Hubo un problema al guardar las anotaciones. Por favor, inténtalo de nuevo.",
-        [{ text: "OK" }]
+        "Hubo un problema al guardar las anotaciones. Por favor, inténtalo de nuevo."
       );
     }
   },
@@ -55,10 +55,9 @@ export const useMenuProductsStore = create<MenuProducts>((set, get) => ({
 
   addProduct: (menuId: number) => {
     if (get().products.some((p) => !p.name || !p.price || !p.category_id)) {
-      Alert.alert(
+      PlatformAlert(
         "Producto incompleto",
-        "Por favor, completa todos los campos del producto previo antes de agregar uno nuevo.",
-        [{ text: "OK" }]
+        "Por favor, completa todos los campos del producto previo antes de agregar uno nuevo."
       );
       return;
     }
@@ -103,10 +102,9 @@ export const useMenuProductsStore = create<MenuProducts>((set, get) => ({
       }));
     } catch (error) {
       console.error("Error deleting product:", error);
-      Alert.alert(
+      PlatformAlert(
         "Error",
-        "Hubo un problema al eliminar el producto. Por favor, inténtalo de nuevo.",
-        [{ text: "OK" }]
+        "Hubo un problema al eliminar el producto. Por favor, inténtalo de nuevo."
       );
     }
   },
@@ -115,10 +113,9 @@ export const useMenuProductsStore = create<MenuProducts>((set, get) => ({
     try {
       if (!product.id) {
         if (get().products.some((p) => p.name === product.name)) {
-          Alert.alert(
+          PlatformAlert(
             "Producto duplicado",
-            `El producto "${product.name}" ya existe en el menú. Por favor, elige un nombre diferente.`,
-            [{ text: "OK" }]
+            `El producto "${product.name}" ya existe en el menú. Por favor, elige un nombre diferente.`
           );
           return;
         }
@@ -151,10 +148,9 @@ export const useMenuProductsStore = create<MenuProducts>((set, get) => ({
       }));
     } catch (error) {
       console.error("Error saving product:", error);
-      Alert.alert(
+      PlatformAlert(
         "Error",
-        "Hubo un problema al guardar el producto. Por favor, inténtalo de nuevo.",
-        [{ text: "OK" }]
+        "Hubo un problema al guardar el producto. Por favor, inténtalo de nuevo."
       );
     }
   },

@@ -4,6 +4,7 @@ import { MenuUpdate } from "../../../types/updateTypes";
 import { Alert } from "react-native";
 import { router } from "expo-router";
 import { AxiosError } from "axios";
+import { PlatformAlert } from "../../../components/PlatformAlert";
 
 export const useCreateMenu = () => {
   const [parameters, setParameters] = useState<MenuUpdate>({
@@ -24,7 +25,7 @@ export const useCreateMenu = () => {
     setCreateLoading(true);
     try {
       if (!parameters.name?.trim() || !parameters.restaurant_id) {
-        Alert.alert("Error", "Por favor, completa todos los campos.");
+        PlatformAlert("Error", "Por favor, completa todos los campos.");
         return;
       }
 
@@ -33,7 +34,7 @@ export const useCreateMenu = () => {
       router.back();
       router.push(`/menus/${res.data.id}`);
     } catch (error) {
-      Alert.alert(
+      PlatformAlert(
         "Error",
         error instanceof AxiosError
           ? error.response?.data.error

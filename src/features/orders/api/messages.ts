@@ -28,12 +28,14 @@ export const getProductsFromChat = async (
 export const sendConfirmOrder = async (
   orderId: number,
   restaurant_number: number,
-  client_number: number
+  client_number: number,
+  delivery_price: number
 ) =>
   api.post(`/confirm_order/`, {
     orderId,
     restaurant_number,
     client_number,
+    delivery_price,
   });
 
 export const sendRejectOrder = async (
@@ -48,3 +50,20 @@ export const sendRejectOrder = async (
     restaurant_number,
     client_number,
   });
+
+export const simulateMessage = async (
+  from: number,
+  to: number,
+  message: string
+) => {
+  const formData = new FormData();
+  formData.append("From", `+${from}`);
+  formData.append("To", `+${to}`);
+  formData.append("Body", message);
+
+  return api.post(`/recollect-messages/`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};

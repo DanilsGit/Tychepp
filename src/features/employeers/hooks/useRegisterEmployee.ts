@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Alert } from "react-native";
 import { supabase } from "../../../lib/supabase";
 import { User } from "@supabase/supabase-js";
+import { PlatformAlert } from "../../../components/PlatformAlert";
 
 export const useRegisterEmployee = () => {
   const [parameters, setParameters] = useState({
@@ -25,19 +26,19 @@ export const useRegisterEmployee = () => {
     const { email, password, restaurantCode } = parameters;
 
     if (!email || !password || !restaurantCode) {
-      Alert.alert("Por favor, completa todos los campos.");
+      PlatformAlert("Por favor, completa todos los campos.");
       setLoading(false);
       return;
     }
 
     if (!email.includes("@")) {
-      Alert.alert("Por favor, introduce un email válido.");
+      PlatformAlert("Por favor, introduce un email válido.");
       setLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      Alert.alert("La contraseña debe tener al menos 6 caracteres.");
+      PlatformAlert("La contraseña debe tener al menos 6 caracteres.");
       setLoading(false);
       return;
     }
@@ -50,7 +51,7 @@ export const useRegisterEmployee = () => {
       .single();
 
     if (restaurantError || !restaurant) {
-      Alert.alert("Código de restaurante inválido o no encontrado.");
+      PlatformAlert("Código de restaurante inválido o no encontrado.");
       setLoading(false);
       return;
     }
@@ -61,7 +62,7 @@ export const useRegisterEmployee = () => {
     });
 
     if (error) {
-      Alert.alert("Error al registrar, por favor intenta de nuevo más tarde.");
+      PlatformAlert("Error al registrar, por favor intenta de nuevo más tarde.");
       setLoading(false);
       return;
     }
@@ -76,7 +77,7 @@ export const useRegisterEmployee = () => {
     restaurant_id: string
   ) => {
     if (!user_id) {
-      Alert.alert("No se pudo crear el perfil del empleado.");
+      PlatformAlert("No se pudo crear el perfil del empleado.");
       return;
     }
 
@@ -89,7 +90,7 @@ export const useRegisterEmployee = () => {
       .eq("id", user_id);
 
     if (error) {
-      Alert.alert("Error perfil del empleado: " + error.message);
+      PlatformAlert("Error perfil del empleado: " + error.message);
       return;
     }
 
@@ -100,7 +101,7 @@ export const useRegisterEmployee = () => {
     });
 
     if (restaurantError) {
-      Alert.alert("Error al vincular: " + restaurantError.message);
+      PlatformAlert("Error al vincular: " + restaurantError.message);
       return;
     }
 
@@ -111,7 +112,7 @@ export const useRegisterEmployee = () => {
     });
 
     if (sessionError) {
-      Alert.alert("Error al iniciar sesión: " + sessionError.message);
+      PlatformAlert("Error al iniciar sesión: " + sessionError.message);
       return;
     }
   };

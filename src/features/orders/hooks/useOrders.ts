@@ -9,8 +9,9 @@ export const useOrders = () => {
   const { setStatus, setOrders, editOrder, addOrder } = useOrderStore();
   const { profile } = useAuthStore() as { profile: ProfileEmployee };
   const [isLoading, setIsLoading] = useState(true);
+  const [retries, setRetries] = useState(0);
   const retryCountRef = useRef(0);
-  const maxRetries = 5;
+  const maxRetries = 10;
   const retryDelay = 2000;
 
   useEffect(() => {
@@ -18,53 +19,48 @@ export const useOrders = () => {
       return;
     }
 
-    const subscribe = () => {
-      const orders = supabase
-        .channel("orders_channel")
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "order",
-            filter: `restaurant_id=eq.${profile.employee.restaurant.id}`,
-          },
-          (payload: any) => {
-            const incomingData = payload.new as Order;
-            console.log("New order received:", incomingData);
-            addOrder(incomingData);
-          }
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "order",
-            filter: `restaurant_id=eq.${profile.employee.restaurant.id}`,
-          },
-          (payload: any) => {
-            const updatedData = payload.new as Order;
-            editOrder(updatedData);
-          }
-        )
-        .subscribe(async (status: string) => {
-          await statusController(status, subscribe);
-        });
-      return orders;
-    };
-
-    const orders = subscribe();
+    const orders = supabase
+      .channel("orders_channel")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "order",
+          filter: `restaurant_id=eq.${profile.employee.restaurant.id}`,
+        },
+        (payload: any) => {
+          const incomingData = payload.new as Order;
+          addOrder(incomingData);
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "order",
+          filter: `restaurant_id=eq.${profile.employee.restaurant.id}`,
+        },
+        (payload: any) => {
+          const updatedData = payload.new as Order;
+          editOrder(updatedData);
+        }
+      )
+      .subscribe(async (status: string) => {
+        await statusController(status);
+      });
 
     return () => {
       supabase.removeChannel(orders);
       setOrders([]);
     };
-  }, [profile]);
+  }, [profile, retries]);
 
   const getOrders = async () => {
-    const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
-    const isoTimestamp = twelveHoursAgo.toISOString();
+    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+    const isoTimestamp = sixHoursAgo.toISOString();
+
     const { data, error } = await supabase
       .from("order")
       .select("*")
@@ -79,20 +75,17 @@ export const useOrders = () => {
     setOrders(data as Order[]);
   };
 
-  const retryConnection = async (subscribe: () => RealtimeChannel) => {
-    if (retryCountRef.current < maxRetries) {
-      retryCountRef.current += 1;
-      setStatus(`Te has desconectado, reinicia la aplicación`);
-      setTimeout(() => {
-        subscribe();
-      }, retryDelay);
-    }
+  const retryConnection = async () => {
+    setRetries((prev) => prev + 1);
+    setStatus(
+      `Reintentando (${retries} veces) Si tarda reinicia la aplicación`
+    );
+    setTimeout(() => {
+      setRetries((prev) => prev + 1);
+    }, retryDelay);
   };
-
-  const statusController = async (
-    status: string,
-    subscribe: () => RealtimeChannel
-  ) => {
+  
+  const statusController = async (status: string) => {
     console.log("Orders status:", status);
 
     if (status === "SUBSCRIBED") {
@@ -102,19 +95,12 @@ export const useOrders = () => {
       setStatus("");
     }
 
-    if (status === "TIMED_OUT") {
-      await retryConnection(subscribe);
-    }
-
-    if (status === "CHANNEL_ERROR") {
-      await retryConnection(subscribe);
+    if (status === "TIMED_OUT" || status === "CHANNEL_ERROR") {
+      retryConnection();
     }
 
     if (status === "CLOSED") {
-      setStatus(
-        "Conexión cerrada, comprueba tu conexión a internet y reinicia la aplicación."
-      );
-      setOrders([]);
+      setStatus("Reconectando... Si tarda reinicia la aplicación");
     }
   };
 

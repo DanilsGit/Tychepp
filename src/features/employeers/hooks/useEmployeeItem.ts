@@ -2,6 +2,7 @@ import { useState } from "react";
 import { EmployeeProfile } from "../../../types/rowTypes";
 import { supabase } from "../../../lib/supabase";
 import { Alert } from "react-native";
+import { PlatformAlert } from "../../../components/PlatformAlert";
 
 export const useEmployeeItem = (initialEmployee: EmployeeProfile) => {
   const [employee, setEmployee] = useState(initialEmployee);
@@ -13,12 +14,12 @@ export const useEmployeeItem = (initialEmployee: EmployeeProfile) => {
       .eq("id", employee.id);
 
     if (error) {
-      Alert.alert("Error", "No se pudo autorizar al empleado.");
+      PlatformAlert("Error", "No se pudo autorizar al empleado.");
       console.error("Error authorizing employee:", error);
       return;
     }
 
-    Alert.alert("Éxito", "Empleado autorizado correctamente.");
+    PlatformAlert("Éxito", "Empleado autorizado correctamente.");
     setEmployee((prev) => ({ ...prev, authorized: true, rejected: false }));
   };
 
@@ -29,12 +30,12 @@ export const useEmployeeItem = (initialEmployee: EmployeeProfile) => {
       .eq("id", employee.id);
 
     if (error) {
-      Alert.alert("Error", "No se pudo cancelar la solicitud del empleado.");
+      PlatformAlert("Error", "No se pudo cancelar la solicitud del empleado.");
       console.error("Error canceling employee request:", error);
       return;
     }
 
-    Alert.alert("Éxito", "Solicitud del empleado cancelada correctamente.");
+    PlatformAlert("Éxito", "Solicitud del empleado cancelada correctamente.");
     setEmployee((prev) => ({ ...prev, authorized: false, rejected: true }));
   };
 
@@ -49,7 +50,7 @@ export const useEmployeeItem = (initialEmployee: EmployeeProfile) => {
     }
 
     setEmployee((prev) => ({ ...prev, rejected: false }));
-    Alert.alert("Éxito", "Rechazo del empleado eliminado correctamente.");
+    PlatformAlert("Éxito", "Rechazo del empleado eliminado correctamente.");
   };
 
   return {

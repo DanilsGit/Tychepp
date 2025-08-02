@@ -7,6 +7,7 @@ import { useUrgentOrders } from "../../src/features/orders/hooks/useUrgentOrders
 import LoaderSpinner from "../../src/components/LoaderSpinner";
 import { useOrders } from "../../src/features/orders/hooks/useOrders";
 import { Ionicons } from "@expo/vector-icons";
+import { PlatformAlert } from "../../src/components/PlatformAlert";
 
 export default function TabsLayout() {
   const { profile } = useAuthStore() as { profile: ProfileEmployee };
@@ -15,17 +16,18 @@ export default function TabsLayout() {
   const { isLoading: ordersLoading } = useOrders();
   const router = useRouter();
 
-  if (isLoading || urgentOrdersLoading || ordersLoading) {
+  if (isLoading) {
     return <LoaderSpinner />;
   }
 
   if (!session || !profile) {
+    console.log("No session or profile found, redirecting to login");
     return <Redirect href="/login" />;
   }
 
   if (profile.role === 3) {
     if (profile.employee.rejected) {
-      Alert.alert(
+      PlatformAlert(
         "Cuenta rechazada",
         "Tu cuenta ha sido rechazada. Por favor, contacta con el administrador."
       );
@@ -35,9 +37,9 @@ export default function TabsLayout() {
       return null;
     }
     if (!profile.employee.authorized) {
-      Alert.alert(
-        "Cuenta pendiente",
-        "Tu cuenta está pendiente de aprobación. Por favor, espera a que sea aprobada."
+      PlatformAlert(
+        "Cuenta no autorizada",
+        "Tu cuenta no está autorizada. Por favor, contacta con el administrador."
       );
       logout().then(() => {
         router.replace("/login");

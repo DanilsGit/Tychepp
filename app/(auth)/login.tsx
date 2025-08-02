@@ -4,6 +4,7 @@ import { Button, Input } from "@rn-vui/base";
 import { supabase } from "../../src/lib/supabase";
 import { Image } from "react-native";
 import { useRouter } from "expo-router";
+import { PlatformAlert } from "../../src/components/PlatformAlert";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ export default function Login() {
       password: password,
     });
 
-    if (error) Alert.alert(error.message);
+    if (error) PlatformAlert("Error", error.message);
     setLoading(false);
   }
 

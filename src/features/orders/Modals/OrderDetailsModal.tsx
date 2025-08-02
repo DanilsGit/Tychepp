@@ -3,8 +3,11 @@ import {
   Alert,
   FlatList,
   Modal,
+  Platform,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { Button, Text } from "@rn-vui/base";
@@ -13,6 +16,8 @@ import { Order } from "../../../types/rowTypes";
 import { useOrderDetails } from "../hooks/useOrderDetails";
 import LoaderSpinner from "../../../components/LoaderSpinner";
 import { useOrderStatus } from "../hooks/useOrderStatus";
+import { OrderDetailsListMobile } from "../components/OrderDetailsListMobile";
+import { OrderDetailsListWeb } from "../components/OrderDetailsListWeb";
 
 interface Props {
   onCancel: () => void;
@@ -22,12 +27,7 @@ interface Props {
 
 export default function OrderDetailsModal({ onCancel, visible, order }: Props) {
   const { isLoading, orderProducts } = useOrderDetails(order.id);
-  const { loading, confirmOrder } = useOrderStatus(order);
-
-  const onOk = async () => {
-    await confirmOrder();
-    onCancel();
-  };
+  const { height } = useWindowDimensions();
 
   if (isLoading) {
     return (
@@ -36,6 +36,13 @@ export default function OrderDetailsModal({ onCancel, visible, order }: Props) {
       </Modal>
     );
   }
+
+  const handleTotalPrice = () => {
+    if (order.delivery_price) {
+      return order.total_price + order.delivery_price;
+    }
+    return order.total_price;
+  };
 
   return (
     <Modal
@@ -74,6 +81,11 @@ export default function OrderDetailsModal({ onCancel, visible, order }: Props) {
                 Esta orden ha sido despachada
               </Text>
             )}
+            {order.status === "WAITING_RESPONSE" && (
+              <Text style={global_styles.waiting_title}>
+                Esta orden está en espera de respuesta
+              </Text>
+            )}
 
             <Text style={{ fontWeight: "bold" }}>#00{order.id}</Text>
             <Text style={{ fontWeight: "bold" }}>{order.client_name}</Text>
@@ -81,46 +93,51 @@ export default function OrderDetailsModal({ onCancel, visible, order }: Props) {
             <Text style={{ fontWeight: "bold" }}>{order.address}</Text>
           </View>
 
-          <View style={styles.itemsContainer}>
-            <FlatList
-              data={orderProducts}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <View style={global_styles.card}>
-                  <Text style={styles.itemName}>{item.product.name}</Text>
-                  {item.comments && <Text>Observaciones: {item.comments}</Text>}
-                  <Text style={styles.priceText}>
-                    $
-                    {item.price_sold.toLocaleString("es-CO", {
-                      minimumFractionDigits: 2,
-                    })}
-                  </Text>
-                </View>
+          <View
+            style={{
+              width: "100%",
+              marginTop: 10,
+              height: height - 300,
+            }}
+          >
+            <View style={{ flex: 1, height: height - 400 }}>
+              {Platform.OS === "web" ? (
+                <OrderDetailsListWeb orderProducts={orderProducts} />
+              ) : (
+                <OrderDetailsListMobile orderProducts={orderProducts} />
               )}
-              ListEmptyComponent={
-                <Text style={styles.emptyText}>No hay productos</Text>
-              }
-              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-              showsVerticalScrollIndicator={true}
-            />
-            <Text style={{ fontWeight: "bold", marginTop: 10, fontSize: 16 }}>
-              Total: $
-              {order.total_price.toLocaleString("es-CO", {
-                minimumFractionDigits: 2,
-              })}
-            </Text>
-          </View>
+            </View>
 
-          <View style={styles.buttonContainer}>
-            {order.status === "PENDING" && (
-              <Button
-                color="success"
-                onPress={onOk}
-                loading={loading}
-                disabled={loading}
-              >
-                CONFIRMAR ORDEN
-              </Button>
+            {order.delivery_price === 0 && (
+              <Text style={styles.totalPriceText}>
+                Total: $
+                {order.total_price.toLocaleString("es-CO", {
+                  minimumFractionDigits: 2,
+                })}
+              </Text>
+            )}
+
+            {order.delivery_price > 0 && (
+              <>
+                <Text style={styles.totalPriceText}>
+                  SubTotal: $
+                  {order.total_price.toLocaleString("es-CO", {
+                    minimumFractionDigits: 2,
+                  })}
+                </Text>
+                <Text style={styles.totalPriceText}>
+                  Domicilio: $
+                  {order.delivery_price.toLocaleString("es-CO", {
+                    minimumFractionDigits: 2,
+                  })}
+                </Text>
+                <Text style={styles.totalPriceText}>
+                  Total: $
+                  {handleTotalPrice().toLocaleString("es-CO", {
+                    minimumFractionDigits: 2,
+                  })}
+                </Text>
+              </>
             )}
           </View>
         </View>
@@ -152,31 +169,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
   },
-  itemsContainer: {
-    width: "100%",
-    marginTop: 10,
-    height: "65%",
-    borderBottomColor: colors.warning,
-    borderBottomWidth: 5,
-    borderTopWidth: 5,
-    borderTopColor: colors.warning,
-  },
-  emptyText: {
-    textAlign: "center",
-    color: "gray",
-  },
-  item: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  itemName: {
-    fontWeight: "bold",
-    fontSize: 16,
-  },
   buttonContainer: {
     width: "100%",
     gap: 10,
+  },
+  totalPriceText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
+    textAlign: "center",
   },
   input: {
     borderWidth: 1,
@@ -184,10 +185,5 @@ const styles = StyleSheet.create({
     padding: 8,
     marginTop: 10,
     width: "100%",
-  },
-  priceText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    marginVertical: 5,
   },
 });

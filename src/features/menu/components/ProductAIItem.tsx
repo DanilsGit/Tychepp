@@ -1,10 +1,11 @@
 import { Button } from "@rn-vui/base";
 import { CategoryForProduct, Product } from "../../../types/rowTypes";
-import { Alert, StyleSheet, TextInput, View } from "react-native";
+import { Alert, Platform, StyleSheet, TextInput, View } from "react-native";
 import { colors } from "../../../styles/global";
 import { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { useMenuProductsStore } from "../storages/menuProductsStorage";
+import { PlatformAlert } from "../../../components/PlatformAlert";
 
 interface Props {
   product: Product;
@@ -20,29 +21,38 @@ export default function ProductAIItem({
   const [loading, setLoading] = useState(false);
   const { categories } = useMenuProductsStore();
 
-  const handleDelete = async () => {
-    Alert.alert(
-      "Descartar producto",
-      "¿Deseas descartar este producto de IA?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Eliminar",
-          onPress: () => deleteAIProduct(parameters),
-          style: "destructive",
-        },
-      ]
-    );
+  const handleDelete = () => {
+    if (Platform.OS === "web") {
+      const confirmed = window.confirm(
+        "¿Deseas descartar este producto de IA?"
+      );
+      if (confirmed) {
+        deleteAIProduct(parameters);
+      }
+    } else {
+      Alert.alert(
+        "Descartar producto",
+        "¿Deseas descartar este producto de IA?",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+          {
+            text: "Eliminar",
+            onPress: () => deleteAIProduct(parameters),
+            style: "destructive",
+          },
+        ]
+      );
+    }
   };
 
   const handleSave = async () => {
     try {
       setLoading(true);
       if (!parameters.name || !parameters.price || !parameters.category_id) {
-        Alert.alert(
+        PlatformAlert(
           "Campos incompletos",
           "Por favor, completa todos los campos obligatorios."
         );
@@ -51,7 +61,7 @@ export default function ProductAIItem({
 
       await saveAIProducts(parameters);
     } catch (error) {
-      Alert.alert(
+      PlatformAlert(
         "Error",
         "Ocurrió un error al guardar el producto. Por favor, inténtalo de nuevo."
       );

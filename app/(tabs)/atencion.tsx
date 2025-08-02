@@ -7,10 +7,11 @@ import UrgentOrdersList from "../../src/features/orders/components/UrgentOrderLi
 
 export default function Atencion() {
   const { status } = useUrgentOrderStore();
+
   return (
     <Screen style={styles.container}>
       <Text style={global_styles.title}>Atención humana</Text>
-      <Text>
+      <Text style={global_styles.subTitle}>
         Atiende rápidamente estos pedidos, ya que son pedidos que requieren
         atención humana inmediata.
       </Text>
