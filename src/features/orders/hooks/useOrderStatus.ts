@@ -21,6 +21,11 @@ export const useOrderStatus = (order: Order) => {
         order.client_number,
         deliveryPrice
       );
+
+      PlatformAlert(
+        `Orden #00${order.id} Confirmada`,
+        `Se le ha enviado el mensaje de confirmación al cliente.`
+      );
     } catch (error) {
       PlatformAlert(
         "Error",
@@ -30,10 +35,6 @@ export const useOrderStatus = (order: Order) => {
       return;
     } finally {
       setLoading(false);
-      PlatformAlert(
-        `Orden #00${order.id} Confirmada`,
-        `Se le ha enviado el mensaje de confirmación al cliente.`
-      );
     }
   };
 
@@ -78,7 +79,10 @@ export const useOrderStatus = (order: Order) => {
         "Error al cancelar la orden:",
         error instanceof Error ? error.message : error
       );
-      PlatformAlert("Error", "No se pudo cancelar la orden. Inténtalo de nuevo.");
+      PlatformAlert(
+        "Error",
+        "No se pudo cancelar la orden. Inténtalo de nuevo."
+      );
       return;
     } finally {
       setLoading(false);

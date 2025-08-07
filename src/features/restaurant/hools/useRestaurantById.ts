@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
-import { Restaurant } from "../../../types/rowTypes";
+import { RestaurantWithMenu } from "../../../types/rowTypes";
 import { useAuthStore } from "../../login/stores/authStore";
 
 export const useRestaurantById = (restaurantId: string) => {
   const { session } = useAuthStore();
-  const [restaurant, setRestaurant] = useState<Restaurant>();
+  const [restaurant, setRestaurant] = useState<RestaurantWithMenu>();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -16,12 +16,15 @@ export const useRestaurantById = (restaurantId: string) => {
     try {
       const { data } = await supabase
         .from("restaurant")
-        .select(`*`)
+        .select(`*, menu(*, product(*))`)
         .eq("owner", session?.user.id)
-        .eq("id", restaurantId);
+        .eq("id", restaurantId)
+        .eq("menu.product.deleted", false)
+        .single();
+
       setIsLoading(false);
       if (!data) return;
-      setRestaurant(data[0]);
+      setRestaurant(data);
     } catch (error) {
       console.error("Error fetching restaurants:", error);
     } finally {
@@ -29,7 +32,7 @@ export const useRestaurantById = (restaurantId: string) => {
     }
   };
 
-  const updateRestaurant = async (updatedData: Partial<Restaurant>) => {
+  const updateRestaurant = async (updatedData: Partial<RestaurantWithMenu>) => {
     try {
       const {
         id,
@@ -37,10 +40,11 @@ export const useRestaurantById = (restaurantId: string) => {
         state,
         created_at,
         icon_url,
-        ready,
         restaurant_code,
+        menu,
         ...data
       } = updatedData;
+
       const { error } = await supabase
         .from("restaurant")
         .update(data)
@@ -48,7 +52,6 @@ export const useRestaurantById = (restaurantId: string) => {
         .eq("owner", session?.user.id);
 
       if (error) throw error;
-      console.log("Restaurant updated successfully", data);
     } catch (error) {
       console.error("Error updating restaurant:", error);
     }

@@ -14,14 +14,14 @@ import { useUrgentOrderStore } from "../storages/urgentOrdersStorage";
 import { PlatformAlert } from "../../../components/PlatformAlert";
 
 export interface ProductFromChat {
-  id: number | null;
+  id: number | undefined | null;
   price: number;
   comments: string;
   uuid: string;
 }
 
 export const useOrderFromChat = (
-  conversation: Conversations | null,
+  conversation: Conversations | undefined | null,
   messages: Message[]
 ) => {
   const { profile } = useAuthStore() as { profile: ProfileEmployee };

@@ -61,13 +61,7 @@ export const global_styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 8,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
     elevation: 5,
   },
   cancelled_title: {
@@ -118,5 +112,9 @@ export const global_styles = StyleSheet.create({
     borderRadius: 5,
     borderBottomColor: colors.gray,
     borderBottomWidth: 1,
+  },
+  buttonsContainer: {
+    marginTop: 20,
+    gap: 15,
   },
 });

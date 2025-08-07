@@ -13,19 +13,21 @@ export type Employee = Database["public"]["Tables"]["employee"]["Row"];
 export type CategoryForProduct =
   Database["public"]["Tables"]["category_for_product"]["Row"];
 
-export type Conversations =
-  Database["public"]["Tables"]["conversations"]["Row"] & {
-    newMessage?: boolean;
-  };
-
 export type Order = Database["public"]["Tables"]["order"]["Row"];
 
-export type OrderProductsProduct =
-  Database["public"]["Tables"]["orders_products"]["Row"] & {
-    product: Product & { category_for_product: CategoryForProduct };
-  };
-
 // ? Mixed types for better type inference
+
+export type EmployeeProfile = Employee & { profiles: Profile };
+
+export type MenuWithRestaurantName = Menu & { restaurant: { name: string } };
+
+export type MenuWithProducts = Menu & {
+  product: Product[];
+};
+
+export type RestaurantWithMenu = Restaurant & {
+  menu: MenuWithProducts[];
+};
 
 export type ProfileEmployee = Profile & {
   employee: Employee & {
@@ -33,9 +35,24 @@ export type ProfileEmployee = Profile & {
   };
 };
 
-export type EmployeeProfile = Employee & { profiles: Profile };
+export type OrderProductsProduct =
+  Database["public"]["Tables"]["orders_products"]["Row"] & {
+    product: Product & { category_for_product: CategoryForProduct };
+  };
 
-export type MenuWithRestaurantName = Menu & { restaurant: { name: string } };
+export type MenuProductsCategory =
+  Database["public"]["Tables"]["menu"]["Row"] & {
+    product: Product & { category_for_product: CategoryForProduct };
+  };
+
+export type ProductCategory = Database["public"]["Tables"]["product"]["Row"] & {
+  category_for_product: CategoryForProduct;
+};
+
+export type Conversations =
+  Database["public"]["Tables"]["conversations"]["Row"] & {
+    newMessage?: boolean;
+  };
 
 export interface Message {
   role: string;

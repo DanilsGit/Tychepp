@@ -10,15 +10,23 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
+import { Redirect, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useChatUrgentOrder } from "../../src/features/orders/hooks/useChatUrgentOrder";
-import ChatMessageList from "../../src/features/orders/components/ChatMessageList";
 import { useOrderFromChat } from "../../src/features/orders/hooks/useOrderFromChat";
 import CreateOrderFromChatModal from "../../src/features/orders/components/CreateOrderFromChatModal";
 import { colors } from "../../src/styles/global";
+import ChatMessageList from "../../src/features/orders/components/ChatMessageList";
+import { useAuthStore } from "../../src/features/login/stores/authStore";
+import { ProfileEmployee } from "../../src/types/rowTypes";
 
 export default function ChatUrgentOrder() {
+  const { profile } = useAuthStore() as { profile: ProfileEmployee };
+
+  if (!profile || !profile.employee) {
+    return <Redirect href="/login" />;
+  }
+
   const { id, recipientName } = useLocalSearchParams();
   const {
     messages,
@@ -216,10 +224,7 @@ const generateStyles = (insetsTop: number, insetsBottom: number) =>
       borderBottomWidth: 1,
       borderBottomColor: "#e0e0e0",
       elevation: 2,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
+      boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
     },
     headerTexts: {
       alignItems: "center",

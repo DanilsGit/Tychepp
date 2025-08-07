@@ -10,6 +10,7 @@ export const useCreateRestaurant = () => {
 
   const [parameters, setParameters] = useState({
     name: "",
+    address: "",
     welcome_message: "",
     whatsapp_number: "",
     owner: session?.user.id,
@@ -27,7 +28,8 @@ export const useCreateRestaurant = () => {
     if (
       !parameters.name ||
       !parameters.welcome_message ||
-      !parameters.whatsapp_number
+      !parameters.whatsapp_number ||
+      !parameters.address
     ) {
       PlatformAlert("Advertencia", "Todos los campos son obligatorios.");
       return;

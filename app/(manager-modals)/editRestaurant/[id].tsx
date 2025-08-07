@@ -1,13 +1,14 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import Screen from "../../src/components/Screen";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
-import { Button, Input, Text } from "@rn-vui/base";
-import { useRestaurantById } from "../../src/features/restaurant/hools/useRestaurantById";
-import LoaderSpinner from "../../src/components/LoaderSpinner";
-import { global_styles } from "../../src/styles/global";
+import Screen from "../../../src/components/Screen";
+import { Linking, StyleSheet, useWindowDimensions, View } from "react-native";
+import { Button, CheckBox, Input, Text } from "@rn-vui/base";
+import { useRestaurantById } from "../../../src/features/restaurant/hools/useRestaurantById";
+import LoaderSpinner from "../../../src/components/LoaderSpinner";
+import { global_styles } from "../../../src/styles/global";
 import { useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { Restaurant } from "../../src/types/rowTypes";
+import { Restaurant } from "../../../src/types/rowTypes";
+import { PlatformAlert } from "../../../src/components/PlatformAlert";
 
 export default function EditRestaurant() {
   const { id } = useLocalSearchParams();
@@ -19,6 +20,30 @@ export default function EditRestaurant() {
   const styles = getStyles(height);
 
   const [parameters, setParameters] = useState(restaurant);
+
+  const handleRestaurantReady = () => {
+    if (!restaurant) return;
+
+    if (restaurant.menu.length === 0) {
+      PlatformAlert(
+        "No hay menú",
+        "Para marcar el restaurante como listo, primero debes crear un menú."
+      );
+      return;
+    }
+
+    if (restaurant.menu.some((menu) => menu.product.length === 0)) {
+      PlatformAlert(
+        "No hay productos",
+        "Para marcar el restaurante como listo, primero debes crear productos en el menú."
+      );
+      return;
+    }
+
+    setParameters((prev) =>
+      prev ? { ...prev, ready: !prev.ready } : undefined
+    );
+  };
 
   useEffect(() => {
     setParameters(restaurant);
@@ -35,8 +60,22 @@ export default function EditRestaurant() {
       if (newRestaurant === restaurant) return;
       await updateRestaurant(newRestaurant);
     },
-    2000
+    1000
   );
+
+  const handleGoToWhatsapp = () => {
+    // https://api.whatsapp.com/send?phone=country_code+phone_number&text=Your%20predefined%20message%20here
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=3167389719&text=${encodeURIComponent(
+      "Hola, tengo dudas sobre la verificación de mi restaurante."
+    )}`;
+
+    Linking.openURL(whatsappUrl).catch(() =>
+      PlatformAlert(
+        "Error al abrir WhatsApp",
+        "Asegúrate de tener WhatsApp instalado en tu dispositivo."
+      )
+    );
+  };
 
   if (isLoading || !restaurant || !parameters) {
     return <LoaderSpinner />;
@@ -52,6 +91,14 @@ export default function EditRestaurant() {
           onChangeText={(text) => setParameters({ ...parameters, name: text })}
           value={parameters.name}
           placeholder="Mi restaurante"
+          autoCapitalize={"none"}
+        />
+        <Input
+          label="Dirección del Restaurante"
+          leftIcon={{ type: "font-awesome", name: "pencil" }}
+          onChangeText={(text) => setParameters({ ...parameters, address: text })}
+          value={parameters.address}
+          placeholder="Calle 12-34, Barrio Ciudad"
           autoCapitalize={"none"}
         />
         <Input
@@ -73,15 +120,26 @@ export default function EditRestaurant() {
             setParameters({ ...parameters, whatsapp_number: Number(text) })
           }
           value={parameters.whatsapp_number.toString()}
-          placeholder="57----------"
+          placeholder="+57----------"
           autoCapitalize={"none"}
           keyboardType="phone-pad"
         />
+
+        <CheckBox
+          checked={parameters.ready}
+          title="¿Marcar como completado el restaurante?"
+          onPress={handleRestaurantReady}
+        />
       </View>
 
-      <Button onPress={() => router.back()}>
-        <Text style={styles.text}>Volver</Text>
-      </Button>
+      <View style={global_styles.buttonsContainer}>
+        <Button onPress={() => router.back()}>
+          <Text style={styles.text}>Volver</Text>
+        </Button>
+        <Button onPress={handleGoToWhatsapp} color={"secondary"}>
+          <Text style={styles.text}>Ayuda con la verificación</Text>
+        </Button>
+      </View>
     </Screen>
   );
 }

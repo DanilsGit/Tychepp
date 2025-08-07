@@ -1,8 +1,8 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Restaurant } from "../../../types/rowTypes";
-import { Button, Icon, Text } from "@rn-vui/base";
+import { Icon, Text } from "@rn-vui/base";
 import { colors, global_styles } from "../../../styles/global";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 
 interface Props {
   restaurant: Restaurant;
@@ -20,10 +20,10 @@ export default function RestaurantItem({ restaurant }: Props) {
   };
 
   return (
-    <Button
+    <TouchableOpacity
       style={[styles.container, global_styles.card]}
       onPress={handleEditRestaurant}
-      buttonStyle={global_styles.card}
+      activeOpacity={0.8}
     >
       <View style={styles.container2}>
         <View>
@@ -32,10 +32,13 @@ export default function RestaurantItem({ restaurant }: Props) {
           {!restaurant.ready && (
             <Text style={styles.notReady}>NO COMPLETADO</Text>
           )}
+          {!restaurant.state && (
+            <Text style={styles.notReady}>NO VERIFICADO</Text>
+          )}
         </View>
         <Icon name="pencil" type="font-awesome" />
       </View>
-    </Button>
+    </TouchableOpacity>
   );
 }
 

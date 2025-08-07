@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Alert } from "react-native";
 import { supabase } from "../../../lib/supabase";
-import { User } from "@supabase/supabase-js";
 import { PlatformAlert } from "../../../components/PlatformAlert";
 
 export const useRegisterEmployee = () => {
@@ -23,9 +21,9 @@ export const useRegisterEmployee = () => {
   const signUpWithEmail = async () => {
     setLoading(true);
 
-    const { email, password, restaurantCode } = parameters;
+    const { email, password, restaurantCode, username } = parameters;
 
-    if (!email || !password || !restaurantCode) {
+    if (!email || !password || !restaurantCode || !username.trim()) {
       PlatformAlert("Por favor, completa todos los campos.");
       setLoading(false);
       return;
@@ -62,7 +60,9 @@ export const useRegisterEmployee = () => {
     });
 
     if (error) {
-      PlatformAlert("Error al registrar, por favor intenta de nuevo más tarde.");
+      PlatformAlert(
+        "Error al registrar, por favor intenta de nuevo más tarde."
+      );
       setLoading(false);
       return;
     }

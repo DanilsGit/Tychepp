@@ -3,6 +3,7 @@ import { CategoryForProduct, Product } from "../../../types/rowTypes";
 import {
   Alert,
   Animated,
+  Platform,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -42,28 +43,37 @@ export default function ProductItem({ product }: Props) {
       !productEdited.price ||
       !productEdited.category_id
     )
-    return;
+      return;
     console.log("Modifying product:", productEdited);
 
     await saveProduct(productEdited);
   }, 1000);
 
   const handleDelete = async () => {
-    Alert.alert(
-      "Eliminar producto",
-      "¿Estás seguro de que quieres eliminar este producto?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Eliminar",
-          onPress: () => deleteProduct(parameters),
-          style: "destructive",
-        },
-      ]
-    );
+    if (Platform.OS === "web") {
+      const confirm = window.confirm(
+        "¿Estás seguro de que quieres eliminar este producto?"
+      );
+      if (confirm) {
+        deleteProduct(parameters);
+      }
+    } else {
+      Alert.alert(
+        "Eliminar producto",
+        "¿Estás seguro de que quieres eliminar este producto?",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+          {
+            text: "Eliminar",
+            onPress: () => deleteProduct(parameters),
+            style: "destructive",
+          },
+        ]
+      );
+    }
   };
 
   const toggleExpand = () => {
@@ -84,7 +94,7 @@ export default function ProductItem({ product }: Props) {
         <Text style={global_styles.itemTitle}>{product.name}</Text>
         <Text>{expanded ? "▼" : "▲"}</Text>
       </TouchableOpacity>
-      
+
       <Animated.View style={styles.container}>
         <View style={{ flexDirection: "row" }}>
           <View style={{ flex: 3 }}>

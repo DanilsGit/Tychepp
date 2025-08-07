@@ -1,18 +1,18 @@
 import { StyleSheet, TextInput, View } from "react-native";
-import Screen from "../../src/components/Screen";
-import { colors, global_styles } from "../../src/styles/global";
+import Screen from "../../../src/components/Screen";
+import { colors, global_styles } from "../../../src/styles/global";
 import { useLocalSearchParams } from "expo-router";
 import { Button, Icon, Image, Text } from "@rn-vui/base";
 import { useEffect, useRef, useState } from "react";
-import { CustomAlert } from "../../src/components/CustomAlert";
-import { useAIProducts } from "../../src/features/menu/hooks/useAIProducts";
-import { useGetCategories } from "../../src/features/menu/hooks/useGetCategories";
-import { useGetMenuProductsById } from "../../src/features/menu/hooks/useGetProductsMenuById";
-import LoaderSpinner from "../../src/components/LoaderSpinner";
-import { useMenuProductsStore } from "../../src/features/menu/storages/menuProductsStorage";
-import ProductAIList from "../../src/features/menu/components/ProductAIList";
+import { CustomAlert } from "../../../src/components/CustomAlert";
+import { useAIProducts } from "../../../src/features/menu/hooks/useAIProducts";
+import { useGetCategories } from "../../../src/features/menu/hooks/useGetCategories";
+import { useGetMenuProductsById } from "../../../src/features/menu/hooks/useGetProductsMenuById";
+import LoaderSpinner from "../../../src/components/LoaderSpinner";
+import { useMenuProductsStore } from "../../../src/features/menu/storages/menuProductsStorage";
+import ProductAIList from "../../../src/features/menu/components/ProductAIList";
 import { useDebouncedCallback } from "use-debounce";
-import ProductByCategoryList from "../../src/features/menu/components/ProductsByCategory";
+import ProductByCategoryList from "../../../src/features/menu/components/ProductsByCategory";
 
 export default function AddProduct() {
   const { id } = useLocalSearchParams();
@@ -70,6 +70,7 @@ export default function AddProduct() {
         placeholder="Escribe aquí las anotaciones generales del menú, por ejemplo: Todas las picadas llevan papas a la francesa, yuca, tomate... Todos los asados llevan... Todos los platos de mariscos llevan..."
         placeholderTextColor={colors.gray}
         multiline
+        numberOfLines={10}
         onChangeText={(text) => setAnnotations(text)}
         value={annotations}
       />

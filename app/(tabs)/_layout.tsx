@@ -20,7 +20,7 @@ export default function TabsLayout() {
     return <LoaderSpinner />;
   }
 
-  if (!session || !profile) {
+  if (!session || !profile || !profile?.employee) {
     console.log("No session or profile found, redirecting to login");
     return <Redirect href="/login" />;
   }

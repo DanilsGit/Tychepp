@@ -13,8 +13,14 @@ export const useGetRestaurants = () => {
   }, []);
 
   const getRestaurants = async () => {
+    setIsLoading(true);
     try {
-      const { data } = await supabase.from("restaurant").select(`*`).eq("owner", session?.user.id);
+      const { data } = await supabase
+        .from("restaurant")
+        .select(`*`)
+        .eq("owner", session?.user.id)
+        .order("created_at", { ascending: true });
+
       setIsLoading(false);
       if (!data) return;
       setRestaurants(data);
@@ -25,5 +31,5 @@ export const useGetRestaurants = () => {
     }
   };
 
-  return { restaurants, isLoading };
+  return { restaurants, isLoading, refresh: getRestaurants };
 };

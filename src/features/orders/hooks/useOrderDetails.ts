@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
-import { Alert } from "react-native";
 import { OrderProductsProduct } from "../../../types/rowTypes";
 import { PlatformAlert } from "../../../components/PlatformAlert";
 

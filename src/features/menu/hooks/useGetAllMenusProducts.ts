@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Product, ProfileEmployee } from "../../../types/rowTypes";
+import { ProductCategory, ProfileEmployee } from "../../../types/rowTypes";
 import { supabase } from "../../../lib/supabase";
 import { useAuthStore } from "../../login/stores/authStore";
 
 export const useGetAllMenusProducts = () => {
   const { profile } = useAuthStore() as { profile: ProfileEmployee };
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export const useGetAllMenusProducts = () => {
   const getProducts = async () => {
     const { data, error, status } = await supabase
       .from("menu")
-      .select(`*, product(*)`)
+      .select(`*, product(*, category_for_product(*))`)
       .eq("restaurant_id", profile.employee.restaurant_id)
       .order("name", { ascending: true });
 
@@ -33,7 +33,7 @@ export const useGetAllMenusProducts = () => {
     const allProducts = data?.flatMap((menu) => menu.product) || [];
 
     if (data && allProducts.length > 0) {
-      setProducts(allProducts as Product[]);
+      setProducts(allProducts);
       setLoading(false);
     }
   };

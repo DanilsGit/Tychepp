@@ -1,26 +1,28 @@
 import { FlatList, View } from "react-native";
-import { Text} from "@rn-vui/base";
+import { Button, Text } from "@rn-vui/base";
 import { useGetMenu } from "../hooks/useGetMenu";
 import MenuItem from "./MenuItem";
 
 export default function MenuList() {
-  const { isLoading, menus } = useGetMenu();
+  const { isLoading, menus, refetch } = useGetMenu();
 
   if (isLoading) {
     return null;
   }
 
   return (
-    <FlatList
-      data={menus}
-      renderItem={({ item }) => <MenuItem menu={item} />}
-      keyExtractor={(item) => item.id.toString()}
-      ListEmptyComponent={
-        <View style={{ padding: 30, alignItems: "center" }}>
+    <View style={{ gap: 10 }}>
+      <Button title={"Refrescar Cambios"} onPress={refetch} color={"secondary"} />
+
+      <FlatList
+        data={menus}
+        renderItem={({ item }) => <MenuItem menu={item} />}
+        keyExtractor={(item) => item.id.toString()}
+        ListEmptyComponent={
           <Text style={{ textAlign: "center" }}>Aún no has agregado menús</Text>
-        </View>
-      }
-      scrollEnabled={false}
-    />
+        }
+        scrollEnabled={false}
+      />
+    </View>
   );
 }

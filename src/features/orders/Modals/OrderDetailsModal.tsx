@@ -100,7 +100,7 @@ export default function OrderDetailsModal({ onCancel, visible, order }: Props) {
               height: height - 300,
             }}
           >
-            <View style={{ flex: 1, height: height - 400 }}>
+            <View style={{ flex: 1, height: "100%" }}>
               {Platform.OS === "web" ? (
                 <OrderDetailsListWeb orderProducts={orderProducts} />
               ) : (

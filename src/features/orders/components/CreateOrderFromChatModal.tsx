@@ -10,7 +10,7 @@ import {
 import { Button, Text } from "@rn-vui/base";
 import { ProductFromChat } from "../hooks/useOrderFromChat";
 import { Picker } from "@react-native-picker/picker";
-import { Product } from "../../../types/rowTypes";
+import { ProductCategory } from "../../../types/rowTypes";
 import { colors, global_styles } from "../../../styles/global";
 import { useRef } from "react";
 
@@ -19,7 +19,7 @@ interface Props {
   onCancel: () => void;
   onAddItem: () => void;
   items: ProductFromChat[];
-  productsAvailable: Product[];
+  productsAvailable: ProductCategory[];
   handleEditFieldAtIndex: (index: number, updatedItem: ProductFromChat) => void;
   handleEditField: (index: number, field: string, value: any) => void;
   handleDeleteItem: (uuid: string) => void;
@@ -122,12 +122,11 @@ export default function CreateOrderFromChatModal({
                         style={{
                           color: colors.black,
                         }}
-                        mode="dropdown"
                       >
                         {productsAvailable.map((product) => (
                           <Picker.Item
                             key={product.id}
-                            label={product.name}
+                            label={`${product.category_for_product.name} - ${product.name}`}
                             value={product.id}
                           />
                         ))}
@@ -197,6 +196,8 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 10,
     height: "64%",
+    borderTopColor: colors.warning,
+    borderTopWidth: 5,
     borderBottomColor: colors.warning,
     borderBottomWidth: 5,
   },

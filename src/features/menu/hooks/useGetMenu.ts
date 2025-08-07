@@ -13,19 +13,26 @@ export const useGetMenu = () => {
   }, []);
 
   const getMenus = async () => {
-    const { data, error, status } = await supabase
-      .from("menu")
-      .select(`*, restaurant(name)`)
-      .eq("restaurant.owner", session?.user.id);
+    setIsLoading(true);
 
-    if (error && status !== 406) {
-      console.error("Error fetching menus:", error);
-      setIsLoading(false);
-      return;
-    }
+    try {
+      const { data, error } = await supabase
+        .from("menu")
+        .select("*, restaurant!inner(*)")
+        .eq("restaurant.owner", session?.user.id);
 
-    if (data) {
-      setMenus(data as MenuWithRestaurantName[]);
+      if (error) throw new Error(`Error fetching menus: ${error.message}`);
+
+      if (data) {
+        setMenus(data as MenuWithRestaurantName[]);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error(
+        "Unexpected error fetching menus:",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+    } finally {
       setIsLoading(false);
     }
   };
@@ -33,5 +40,6 @@ export const useGetMenu = () => {
   return {
     menus,
     isLoading,
+    refetch: getMenus,
   };
 };

@@ -9,13 +9,13 @@ import {
 import { Button, Input, Text } from "@rn-vui/base";
 import { global_styles } from "../../src/styles/global";
 import { useRouter } from "expo-router";
-import { useRegisterEmployee } from "../../src/features/employeers/hooks/useRegisterEmployee";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Screen from "../../src/components/Screen";
+import { useRegisterManager } from "../../src/features/employeers/hooks/useRegisterManager";
 
-export default function RegisterEmployee() {
+export default function RegisterManager() {
   const { handleChange, loading, parameters, signUpWithEmail } =
-    useRegisterEmployee();
+    useRegisterManager();
 
   const router = useRouter();
 
@@ -27,7 +27,9 @@ export default function RegisterEmployee() {
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
       >
         <Screen style={styles.container}>
-          <Text style={global_styles.title}>Registro | Empleado</Text>
+          <Text style={global_styles.title}>
+            Registro | Dueño de restaurantes
+          </Text>
 
           <Image
             source={require("../../assets/icon.png")}
@@ -35,11 +37,22 @@ export default function RegisterEmployee() {
           />
 
           <Input
-            label="Nombre de usuario (Visible para el jefe)"
+            label="Nombre completo"
             leftIcon={{ type: "font-awesome", name: "user" }}
-            onChangeText={(text) => handleChange("username", text)}
-            value={parameters.username}
-            placeholder="Nombre de usuario"
+            onChangeText={(text) => handleChange("fullname", text)}
+            value={parameters.fullname}
+            placeholder="Nombre completo"
+            autoCapitalize={"words"}
+          />
+
+          <Input
+            label="Número de teléfono personal | Incluir código de país"
+            leftIcon={{ type: "font-awesome", name: "phone" }}
+            onChangeText={(text) => handleChange("phone", text)}
+            value={parameters.phone}
+            placeholder="+57 --- --- -- --"
+            autoCapitalize={"none"}
+            keyboardType="phone-pad"
           />
 
           <Input
@@ -47,7 +60,7 @@ export default function RegisterEmployee() {
             leftIcon={{ type: "font-awesome", name: "envelope" }}
             onChangeText={(text) => handleChange("email", text)}
             value={parameters.email}
-            placeholder="email@address.com"
+            placeholder="email@ejemplo.com"
             autoCapitalize={"none"}
           />
 
@@ -62,16 +75,14 @@ export default function RegisterEmployee() {
           />
 
           <Input
-            label="Código del restaurante"
-            leftIcon={{ type: "font-awesome", name: "building" }}
-            onChangeText={(text) => handleChange("restaurantCode", text)}
-            value={parameters.restaurantCode}
-            placeholder="Código del restaurante"
-            autoCapitalize="none"
+            label="Repite la contraseña"
+            leftIcon={{ type: "font-awesome", name: "lock" }}
+            onChangeText={(text) => handleChange("repeatPassword", text)}
+            value={parameters.repeatPassword}
+            secureTextEntry={true}
+            placeholder="Repite la contraseña"
+            autoCapitalize={"none"}
           />
-          <Text>
-            Este código lo proporciona el administrador del restaurante.
-          </Text>
 
           <View style={[styles.verticallySpaced, styles.mt20]}>
             <Button

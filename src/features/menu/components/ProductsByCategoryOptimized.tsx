@@ -1,5 +1,5 @@
 import { FlatList, TouchableOpacity, View } from "react-native";
-import { CategoryForProduct, Product } from "../../../types/rowTypes";
+import { Product } from "../../../types/rowTypes";
 import { Text } from "@rn-vui/base";
 import ProductItem from "./ProductItem";
 import { global_styles } from "../../../styles/global";
@@ -11,6 +11,7 @@ type Props = {
     data: Product[];
   };
 };
+
 
 export default function ProductsByCategoryOptimized({ item }: Props) {
   const [expanded, setExpanded] = useState(false);
