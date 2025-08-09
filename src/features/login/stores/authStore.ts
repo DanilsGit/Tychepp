@@ -32,10 +32,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      throw error;
-    }
+    await supabase.auth.signOut();
     set({ session: null, profile: null });
   },
 

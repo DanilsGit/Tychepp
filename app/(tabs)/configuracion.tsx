@@ -59,7 +59,7 @@ export default function Configuracion() {
         />
       </View>
       <View style={styles.verticallySpaced}>
-        <Button title="Cerrar sesión" onPress={() => logout()} />
+        <Button title="Cerrar sesión" onPress={async () => await logout()} />
       </View>
     </View>
   );
