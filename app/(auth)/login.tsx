@@ -24,7 +24,7 @@ export default function Login() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email: email.trim(),
-      password: password,
+      password: password.trim(),
     });
 
     if (error) PlatformAlert("Error", error.message);

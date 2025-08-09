@@ -42,6 +42,7 @@ export const useRestaurantById = (restaurantId: string) => {
         icon_url,
         restaurant_code,
         menu,
+        whatsapp_number,
         ...data
       } = updatedData;
 

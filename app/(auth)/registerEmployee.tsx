@@ -62,6 +62,16 @@ export default function RegisterEmployee() {
           />
 
           <Input
+            label="Repite la contraseña"
+            leftIcon={{ type: "font-awesome", name: "lock" }}
+            onChangeText={(text) => handleChange("repeatPassword", text)}
+            value={parameters.repeatPassword}
+            secureTextEntry={true}
+            placeholder="Repite la contraseña"
+            autoCapitalize={"none"}
+          />
+
+          <Input
             label="Código del restaurante"
             leftIcon={{ type: "font-awesome", name: "building" }}
             onChangeText={(text) => handleChange("restaurantCode", text)}

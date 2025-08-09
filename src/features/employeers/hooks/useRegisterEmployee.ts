@@ -7,6 +7,7 @@ export const useRegisterEmployee = () => {
     username: "",
     email: "",
     password: "",
+    repeatPassword: "",
     restaurantCode: "",
   });
   const [loading, setLoading] = useState(false);
@@ -25,6 +26,12 @@ export const useRegisterEmployee = () => {
 
     if (!email || !password || !restaurantCode || !username.trim()) {
       PlatformAlert("Por favor, completa todos los campos.");
+      setLoading(false);
+      return;
+    }
+
+    if (password !== parameters.repeatPassword) {
+      PlatformAlert("Las contraseñas no coinciden.");
       setLoading(false);
       return;
     }
@@ -55,11 +62,19 @@ export const useRegisterEmployee = () => {
     }
 
     const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
+      email: email.trim(),
+      password: password.trim(),
     });
 
     if (error) {
+      if (error.message.includes("already registered")) {
+        PlatformAlert(
+          "El email ya está registrado",
+          "Intenta iniciar sesión o recuperar tu contraseña."
+        );
+        return;
+      }
+
       PlatformAlert(
         "Error al registrar, por favor intenta de nuevo más tarde."
       );
@@ -67,13 +82,19 @@ export const useRegisterEmployee = () => {
       return;
     }
 
-    await createEmployeeProfile(data.user?.id, restaurant.id);
+    if (!data.user) {
+      PlatformAlert("No se pudo crear el usuario.");
+      setLoading(false);
+      return;
+    }
+
+    await createEmployeeProfile(data.user.id, restaurant.id);
 
     setLoading(false);
   };
 
   const createEmployeeProfile = async (
-    user_id: string | undefined,
+    user_id: string,
     restaurant_id: string
   ) => {
     if (!user_id) {

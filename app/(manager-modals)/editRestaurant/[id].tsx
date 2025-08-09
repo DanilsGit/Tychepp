@@ -117,10 +117,10 @@ export default function EditRestaurant() {
           label="Número de WhatsApp con el código de país"
           leftIcon={{ type: "font-awesome", name: "phone" }}
           onChangeText={(text) =>
-            setParameters({ ...parameters, whatsapp_number: Number(text) })
+            setParameters({ ...parameters, phone: Number(text) })
           }
-          value={parameters.whatsapp_number.toString()}
-          placeholder="+57----------"
+          value={parameters.phone.toString()}
+          placeholder="+57---------- Sin espacios ni guiones"
           autoCapitalize={"none"}
           keyboardType="phone-pad"
         />

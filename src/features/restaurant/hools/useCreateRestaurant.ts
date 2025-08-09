@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Alert } from "react-native";
 import { supabase } from "../../../lib/supabase";
 import { router } from "expo-router";
 import { useAuthStore } from "../../login/stores/authStore";
@@ -45,7 +44,10 @@ export const useCreateRestaurant = () => {
 
     setCreateLoading(true);
     try {
-      const { error } = await supabase.from("restaurant").insert(parameters);
+      const { error } = await supabase.from("restaurant").insert({
+        ...parameters,
+        phone: parameters.whatsapp_number,
+      });
       if (error) throw error;
       PlatformAlert("Éxito", "Restaurante creado exitosamente.");
       router.back();

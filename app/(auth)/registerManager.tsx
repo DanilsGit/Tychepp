@@ -50,7 +50,7 @@ export default function RegisterManager() {
             leftIcon={{ type: "font-awesome", name: "phone" }}
             onChangeText={(text) => handleChange("phone", text)}
             value={parameters.phone}
-            placeholder="+57 --- --- -- --"
+            placeholder="+57... Sin espacios ni guiones"
             autoCapitalize={"none"}
             keyboardType="phone-pad"
           />

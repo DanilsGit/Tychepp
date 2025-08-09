@@ -50,7 +50,6 @@ export const useOrderStatus = (order: Order) => {
         throw new Error(error.message);
       }
 
-      PlatformAlert("Éxito", "La orden ha sido despachada correctamente");
     } catch (error) {
       PlatformAlert("Error", "Ocurrió un error al despachar la orden");
     } finally {

@@ -69,7 +69,7 @@ export default function CreateRestaurant() {
           leftIcon={{ type: "font-awesome", name: "phone" }}
           onChangeText={(text) => handleChange("whatsapp_number", text)}
           value={parameters.whatsapp_number}
-          placeholder="57----------"
+          placeholder="+57---------- Sin espacios ni guiones"
           autoCapitalize={"none"}
           keyboardType="phone-pad"
         />
